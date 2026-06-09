@@ -1,0 +1,218 @@
+---
+title: The qpyd CLI
+---
+
+**tl;dr**: `qpyd` is a higher-level command-line workflow built on top of
+quartodoc. Where [`quartodoc build`](basic-building.qmd) generates your API
+reference pages, `qpyd` wraps the *whole* docs lifecycle — pre-render builds,
+rendering, previewing, publishing, scaffolding — and adds parallel notebook
+management.
+
+It installs two console scripts:
+
+| Command | Purpose |
+|---------|---------|
+| `qpyd`  | Build, render, preview, publish, and scaffold a docs site. |
+| `qpynb` | Run, check, convert, and clean notebooks (`.qmd` / `.ipynb`). Also available as `qpyd nb …`. |
+
+`qpyd` builds on [`sciris`](https://sciris.org), [`jupytext`](https://jupytext.readthedocs.io),
+and [`nbformat`](https://nbformat.readthedocs.io), and shells out to the
+external [`quarto`](https://quarto.org) binary, so make sure Quarto is installed
+and on your `PATH`.
+
+## Quick start
+
+Scaffold a docs folder, then render it:
+
+```bash
+# Create docs/ with a starter _quarto.yml, index.qmd, and _variables.py
+qpyd init docs --package your_package
+
+cd docs
+
+# Run pre-render steps, then `quarto render`
+qpyd render
+
+# Or preview with live reload
+qpyd preview
+```
+
+## `qpyd`: site commands
+
+### `qpyd prerender`
+
+Runs the pre-render build steps, in order:
+
+1. `quartodoc build` — generate the API reference pages.
+2. Customize aliases — add short cross-reference aliases (e.g. `pkg.Thing` for
+   `pkg.submodule.Thing`) to `objects.json`.
+3. `quartodoc interlinks` — build interlink inventories.
+4. Build a Sphinx-compatible `objects.inv` so other projects can resolve your
+   references via intersphinx.
+
+```bash
+qpyd prerender
+```
+
+The documented package name is read from the `quartodoc.package` key in your
+`_quarto.yml`. This is the command you typically wire into your project's
+`pre-render` hook (see [below](#configuring-_quartoyml)).
+
+### `qpyd render`
+
+Runs `qpyd prerender`, then `quarto render`, reporting the total build time.
+Any extra arguments are passed straight through to Quarto:
+
+```bash
+qpyd render                 # full build
+qpyd render --to html       # extra args forwarded to `quarto render`
+qpyd render --no-prerender  # skip the pre-render steps
+```
+
+### `qpyd preview`
+
+Like `qpyd render`, but launches `quarto preview` (a live-reloading server)
+after the pre-render steps:
+
+```bash
+qpyd preview
+qpyd preview --no-prerender
+```
+
+### `qpyd gh-publish`
+
+Renders with `--cache-refresh` and publishes to the `gh-pages` branch via
+`quarto publish`.
+
+```bash
+qpyd gh-publish
+```
+
+:::{.callout-warning}
+This pushes to a remote branch and updates your live site. It is never run as
+part of any other command.
+:::
+
+### `qpyd init`
+
+Scaffolds a docs folder with a starter `_quarto.yml`, `index.qmd`, and
+`_variables.py`. **Existing files are never overwritten**, so it is safe to run
+in an established project.
+
+```bash
+qpyd init docs --package your_package
+```
+
+### `qpyd clean`
+
+Deletes auto-generated scratch files after a build. This is **opt-in**: it only
+removes files matching the `qpyd.clean` glob patterns in your `_quarto.yml`, and
+it never deletes source files (`.qmd`, `.ipynb`, `.py`, `.md`).
+
+```bash
+qpyd clean            # delete configured scratch files
+qpyd clean --dry-run  # show what would be deleted
+```
+
+## `qpynb`: notebook commands
+
+A "notebook" is an `.ipynb` file, or a `.qmd` file containing a `{python}` code
+cell. Commands that take `paths` accept individual notebooks or folders; omit
+them to operate on the whole project.
+
+### `qpynb run` and `qpynb check`
+
+Both execute notebooks **in parallel**. The difference is what they do with the
+cache:
+
+```bash
+qpynb run            # execute via `quarto render`, updating the _freeze/ cache
+qpynb check          # execute to verify they run; touch no caches, leave no files
+qpynb run tutorials  # only the notebooks under tutorials/
+qpynb check --serial # one at a time (useful for debugging)
+```
+
+* **`run`** renders each notebook with `quarto render`, which executes it *and*
+  refreshes Quarto's freeze cache (`_freeze/`). Use it to pre-bake the cache in
+  parallel so a subsequent full-site render is fast.
+* **`check`** is a pure validation pass — it executes each notebook to confirm
+  it runs without error, but writes no cache and leaves nothing behind. This is
+  ideal for CI.
+
+During `run`, each per-notebook render sets `QPYD_SKIP_HOOKS=1`, so a project
+`pre-render: qpyd prerender` hook becomes a no-op rather than rebuilding the
+whole API reference (and racing on `objects.json`) once per notebook.
+
+### `qpynb refresh`
+
+Deletes the cached copies of notebooks — Quarto's freeze cache (`_freeze/`) and
+every nested jupyter cache (`.jupyter_cache/`) — so they re-execute on the next
+render.
+
+```bash
+qpynb refresh
+qpynb refresh --dry-run
+```
+
+### `qpynb to-py` / `to-qmd` / `to-ipynb`
+
+Convert a notebook between formats. `.qmd` ⇄ `.ipynb` conversions go through
+`quarto convert`; anything involving `.py` uses `jupytext`. The destination is
+not overwritten unless you pass `--force`.
+
+```bash
+qpynb to-py tutorials/intro.qmd      # -> tutorials/intro.py
+qpynb to-ipynb tutorials/intro.qmd   # -> tutorials/intro.ipynb
+qpynb to-qmd notebook.ipynb --force  # overwrite an existing notebook.qmd
+```
+
+### `qpynb clear`
+
+Strips saved outputs and execution counts from `.ipynb` notebooks and
+normalizes them. Files that are already clean are left untouched.
+
+```bash
+qpynb clear
+qpynb clear --dry-run
+```
+
+## `_variables.py`
+
+You can place an optional `_variables.py` file alongside `_quarto.yml`. Its
+public, non-callable, YAML-serializable values are passed to `quarto render` as
+`-M key:value` metadata by `qpyd render` and `qpyd preview`:
+
+```python
+# _variables.py
+import your_package
+version = your_package.__version__
+versiondate = your_package.__versiondate__
+```
+
+Values are YAML-encoded, so version strings survive intact (e.g. `"1.10"` is
+passed as the string `'1.10'`, not coerced to the number `1.1`). Reference them
+in documents with the [`meta` shortcode](https://quarto.org/docs/authoring/variables.html#meta):
+
+```markdown
+Docs for version {{{< meta version >}}} ({{{< meta versiondate >}}}).
+```
+
+## Configuring `_quarto.yml`
+
+The keys `qpyd` reads or writes:
+
+```yaml
+project:
+  pre-render: qpyd prerender   # build API docs etc. before each render
+  # post-render: qpyd clean    # optional; opt-in scratch cleanup
+
+quartodoc:
+  package: your_package        # used by prerender for aliases / objects.inv
+
+qpyd:
+  clean:                       # optional glob patterns for `qpyd clean`
+    - '**/my-*.png'            # source files are never deleted, even if matched
+
+execute:
+  freeze: auto                 # let `qpynb run` pre-bake the freeze cache
+```

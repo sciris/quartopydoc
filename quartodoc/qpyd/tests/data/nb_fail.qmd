@@ -1,0 +1,9 @@
+---
+title: Failing notebook
+---
+
+A notebook that raises an error.
+
+```{python}
+raise ValueError("intentional failure")
+```

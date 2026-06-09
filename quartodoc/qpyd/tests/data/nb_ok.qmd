@@ -1,0 +1,11 @@
+---
+title: OK notebook
+---
+
+A notebook that runs successfully.
+
+```{python}
+x = 1 + 1
+assert x == 2
+print("ok", x)
+```
