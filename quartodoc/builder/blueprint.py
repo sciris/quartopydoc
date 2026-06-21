@@ -295,7 +295,9 @@ class BlueprintTransformer(PydanticTransformer):
     @dispatch
     def enter(self, el: Section):
         if el.contents:
-            return el
+            # Already have contents: still recurse so child Auto entries get
+            # transformed into Doc elements (don't short-circuit the visitor).
+            return super().enter(el)
 
         package = self.crnt_package
         label = el.title or el.subtitle or "(untitled)"
