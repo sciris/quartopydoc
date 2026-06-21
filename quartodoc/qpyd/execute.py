@@ -74,7 +74,7 @@ def execute_notebook(path):
                 py_path = _make_runnable_py(path, tmp)
                 print(f"Executing {path.name}...")
                 subprocess.run(
-                    [sys.executable, str(py_path)],
+                    [sys.executable, "-m", "IPython", str(py_path)], # Use IPython so get_ipython() and display() are available
                     check=True,
                     capture_output=True,
                     cwd=str(path.parent),
