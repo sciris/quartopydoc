@@ -17,7 +17,7 @@ _PASSTHROUGH = dict(ignore_unknown_options=True, allow_extra_args=True)
 
 
 @click.group(name="qpyd", invoke_without_command=True)
-@click.version_option(package_name="quartodoc")
+@click.version_option(package_name="quartopydoc")
 @click.pass_context
 def cli(ctx):
     """

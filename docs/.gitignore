@@ -16,3 +16,5 @@ _sidebar.yml
 _extensions
 
 /.luarc.json
+
+**/*.quarto_ipynb

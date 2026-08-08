@@ -21,12 +21,12 @@ Use the [quarto add command](https://quarto.org/docs/extensions/filters.html#dis
 to install the interlinks filter:
 
 ```bash
-quarto add machow/quartodoc
+quarto add sciris/quartopydoc
 ```
 
 :::{.callout-note}
 The code for the filter can be found in quartodoc's
-[_extension folder](https://github.com/machow/quartodoc/tree/main/_extensions/interlinks)
+[_extension folder](https://github.com/sciris/quartopydoc/tree/main/_extensions/interlinks)
 :::
 
 ## Configuring the interlinks filter
@@ -73,7 +73,7 @@ By default inventory files are saved as JSON, but this option keeps them as text
 and attempts to parse them much faster.
 
 :::{.callout-warning}
-Be sure to install the latest version of the interlinks filter, using `quarto add machow/quartodoc`.
+Be sure to install the latest version of the interlinks filter, using `quarto add sciris/quartopydoc`.
 :::
 
 ### Rendering interlinks in API docs
@@ -197,7 +197,7 @@ See the [sphobjinv docs](https://sphobjinv.readthedocs.io/en/stable/) for thorou
 details on these files, and how they're used in sphinx.
 
 :::{.callout-note}
-[objects-test.txt](https://github.com/machow/quartodoc/tree/main/docs/objects-test.txt) is an example file with one entry: [](`qd2.Auto`).
+[objects-test.txt](https://github.com/sciris/quartopydoc/tree/main/docs/objects-test.txt) is an example file with one entry: [](`qd2.Auto`).
 :::
 
 ## More information

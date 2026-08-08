@@ -1,3 +1,4 @@
+import pytest
 from click.testing import CliRunner
 
 from quartodoc.qpyd import cli, nb_cli
@@ -15,6 +16,18 @@ def test_qpynb_no_subcommand_shows_help():
     assert result.exit_code == 0
     for cmd in ["run", "check", "refresh", "to-py", "to-qmd", "to-ipynb", "clear"]:
         assert cmd in result.output
+
+
+@pytest.mark.parametrize("group", [cli, nb_cli])
+def test_version_option(group):
+    # note that this resolves the distribution name (quartopydoc), which differs
+    # from the package name, so it breaks if the two get out of sync
+    from importlib_metadata import version
+
+    result = CliRunner().invoke(group, ["--version"])
+
+    assert result.exit_code == 0, result.output
+    assert version("quartopydoc") in result.output
 
 
 def test_nb_alias():

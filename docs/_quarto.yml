@@ -30,7 +30,7 @@ interlinks:
 
 
 website:
-  title: "quartodoc"
+  title: "quartopydoc"
   page-navigation: true
   navbar:
     left:
@@ -45,7 +45,7 @@ website:
 
     right:
       - icon: github
-        href: https://github.com/machow/quartodoc/
+        href: https://github.com/sciris/quartopydoc/
   sidebar:
     - id: get-started
       title: Get Started

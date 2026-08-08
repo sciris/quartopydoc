@@ -9,6 +9,7 @@ _SERIAL_HELP = "Process one notebook at a time instead of in parallel (for debug
 
 
 @click.group(name="qpynb", invoke_without_command=True)
+@click.version_option(package_name="quartopydoc")
 @click.pass_context
 def nb_cli(ctx):
     """

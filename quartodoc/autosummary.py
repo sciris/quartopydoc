@@ -780,7 +780,8 @@ class Builder:
         from importlib_resources import files
         from importlib_metadata import version
 
-        v = version("quartodoc")
+        # note that the distribution name differs from the package name
+        v = version("quartopydoc")
 
         note = (
             f"/*\nThis file generated automatically by quartodoc version {v}.\n"

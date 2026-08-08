@@ -1,12 +1,19 @@
 # Overview
 
 
-[![CI](https://github.com/machow/quartodoc/actions/workflows/ci.yml/badge.svg)](https://github.com/machow/quartodoc/actions/workflows/ci.yml)
+[![CI](https://github.com/sciris/quartopydoc/actions/workflows/ci.yml/badge.svg)](https://github.com/sciris/quartopydoc/actions/workflows/ci.yml)
 
-**quartodoc** lets you quickly generate Python package API reference
-documentation using Markdown and [Quarto](https://quarto.org). quartodoc
-is designed as an alternative to
+**quartopydoc** lets you quickly generate Python package API reference
+documentation using Markdown and [Quarto](https://quarto.org). It is
+designed as an alternative to
 [Sphinx](https://www.sphinx-doc.org/en/master/).
+
+quartopydoc is a fork of
+[quartodoc](https://github.com/machow/quartodoc), created by Michael
+Chow at Posit. Only the name of the distribution differs: you still
+import `quartodoc`, still run `quartodoc build`, and still configure a
+`quartodoc:` section in your `_quarto.yml`. For what the fork adds on
+top, see [differences from quartodoc](#differences-from-quartodoc).
 
 Check out the below screencast for a walkthrough of creating a
 documentation site, or read on for instructions.
@@ -23,14 +30,17 @@ documentation site, or read on for instructions.
 ## Installation
 
 ``` bash
-python -m pip install quartodoc
+python -m pip install quartopydoc
 ```
 
 or from GitHub
 
 ``` bash
-python -m pip install git+https://github.com/machow/quartodoc.git
+python -m pip install git+https://github.com/sciris/quartopydoc.git
 ```
+
+Note that the package is installed as `quartopydoc`, but imported as
+`quartodoc`.
 
 > [!IMPORTANT]
 >
@@ -49,7 +59,7 @@ You can configure quartodoc alongside the rest of your Quarto site in
 the
 [`_quarto.yml`](https://quarto.org/docs/projects/quarto-projects.html)
 file you are already using for Quarto. To [configure
-quartodoc](https://machow.github.io/quartodoc/get-started/basic-docs.html#site-configuration),
+quartodoc](https://sciris.github.io/quartopydoc/get-started/basic-docs.html#site-configuration),
 you need to add a `quartodoc` section to the top level your
 `_quarto.yml` file. Below is a minimal example of a configuration that
 documents the `quartodoc` package:
@@ -150,21 +160,61 @@ quartodoc:
 The functions listed in `contents` are assumed to be imported from the
 package.
 
+Instead of listing them out, you can set `contents: auto` to document
+every public submodule of the package:
+
+``` yaml
+quartodoc:
+  package: quartodoc
+  sections:
+    - title: All modules
+      desc: ""
+      contents: auto
+```
+
+## Differences from quartodoc
+
+Everything documented for quartodoc still applies. On top of it,
+quartopydoc adds:
+
+**The `qpyd` and `qpynb` commands.** Where `quartodoc build` generates
+your API reference pages, `qpyd` wraps the whole docs lifecycle —
+pre-render builds, rendering, previewing, publishing, and scaffolding a
+new docs folder — and `qpynb` runs, checks, converts, and cleans
+notebooks in parallel. See [the qpyd
+CLI](https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html).
+
+**`contents: auto`.** Document every public submodule of a package
+without listing them out, as shown [above](#looking-up-objects). Private
+modules and test modules are skipped.
+
+**griffe 2.x.** quartopydoc requires griffe 2.0 or later, and tracks its
+current API.
+
+Note that quartopydoc is not a drop-in replacement in one respect:
+installing both it and quartodoc into the same environment will
+conflict, since both provide the `quartodoc` package and the `quartodoc`
+command.
+
 ## Learning more
 
 Go [to the next
-page](https://machow.github.io/quartodoc/get-started/basic-docs.html) to
-learn how to configure quartodoc sites, or check out these handy pages:
+page](https://sciris.github.io/quartopydoc/get-started/basic-docs.html)
+to learn how to configure quartodoc sites, or check out these handy
+pages:
 
+- [The qpyd
+  CLI](https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html):
+  building, previewing, and publishing a site, and managing notebooks.
 - [Examples
-  page](https://machow.github.io/quartodoc/examples/index.html): sites
+  page](https://sciris.github.io/quartopydoc/examples/index.html): sites
   using quartodoc.
 - [Tutorials
-  page](https://machow.github.io/quartodoc/tutorials/index.html):
+  page](https://sciris.github.io/quartopydoc/tutorials/index.html):
   screencasts of building a quartodoc site.
 - [Docstring issues and
-  examples](https://machow.github.io/quartodoc/get-started/docstring-examples.html):
+  examples](https://sciris.github.io/quartopydoc/get-started/docstring-examples.html):
   common issues when formatting docstrings.
 - [Programming, the big
-  picture](https://machow.github.io/quartodoc/get-started/dev-big-picture.html):
+  picture](https://sciris.github.io/quartopydoc/get-started/dev-big-picture.html):
   the nitty gritty of how quartodoc works, and how to extend it.

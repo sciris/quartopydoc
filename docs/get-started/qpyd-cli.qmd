@@ -15,6 +15,8 @@ It installs two console scripts:
 | `qpyd`  | Build, render, preview, publish, and scaffold a docs site. |
 | `qpynb` | Run, check, convert, and clean notebooks (`.qmd` / `.ipynb`). Also available as `qpyd nb …`. |
 
+Both accept `--help` and `--version`.
+
 `qpyd` builds on [`sciris`](https://sciris.org), [`jupytext`](https://jupytext.readthedocs.io),
 and [`nbformat`](https://nbformat.readthedocs.io), and shells out to the
 external [`quarto`](https://quarto.org) binary, so make sure Quarto is installed

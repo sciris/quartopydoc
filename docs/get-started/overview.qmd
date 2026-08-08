@@ -10,8 +10,10 @@ jupyter:
 ---
 
 
-**quartodoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org).
-quartodoc is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
+**quartopydoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org).
+It is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
+
+quartopydoc is a fork of [quartodoc](https://github.com/machow/quartodoc), created by Michael Chow at Posit. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what the fork adds on top, see [differences from quartodoc](#differences-from-quartodoc).
 
 
 Check out the below screencast for a walkthrough of creating a documentation site, or read on for instructions.
@@ -49,13 +51,15 @@ else:
 ## Installation
 
 ```bash
-python -m pip install quartodoc
+python -m pip install quartopydoc
 ```
 or from GitHub
 
 ```bash
-python -m pip install git+https://github.com/machow/quartodoc.git
+python -m pip install git+https://github.com/sciris/quartopydoc.git
 ```
+
+Note that the package is installed as `quartopydoc`, but imported as `quartodoc`.
 
 :::{.callout-important}
 
@@ -161,13 +165,36 @@ quartodoc:
 
 The functions listed in `contents` are assumed to be imported from the package.
 
-If no contents are provided, quartodoc will attempt to pull in all modules (i.e. `.py` files) from the package.
+Instead of listing them out, you can set `contents: auto` to document every public submodule of the package:
+
+```yaml
+quartodoc:
+  package: quartodoc
+  sections:
+    - title: All modules
+      desc: ""
+      contents: auto
+```
+
+
+## Differences from quartodoc
+
+Everything documented for quartodoc still applies. On top of it, quartopydoc adds:
+
+**The `qpyd` and `qpynb` commands.** Where `quartodoc build` generates your API reference pages, `qpyd` wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and `qpynb` runs, checks, converts, and cleans notebooks in parallel. See [the qpyd CLI](qpyd-cli.qmd).
+
+**`contents: auto`.** Document every public submodule of a package without listing them out, as shown [above](#looking-up-objects). Private modules and test modules are skipped.
+
+**griffe 2.x.** quartopydoc requires griffe 2.0 or later, and tracks its current API.
+
+Note that quartopydoc is not a drop-in replacement in one respect: installing both it and quartodoc into the same environment will conflict, since both provide the `quartodoc` package and the `quartodoc` command.
 
 
 ## Learning more
 
 Go [to the next page](basic-docs.qmd) to learn how to configure quartodoc sites, or check out these handy pages:
 
+* [The qpyd CLI](./qpyd-cli.qmd): building, previewing, and publishing a site, and managing notebooks.
 * [Examples page](/examples/index.qmd): sites using quartodoc.
 * [Tutorials page](/tutorials/index.qmd): screencasts of building a quartodoc site.
 * [Docstring issues and examples](./docstring-examples.qmd): common issues when formatting docstrings.
