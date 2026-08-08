@@ -71,6 +71,10 @@ class Section(_Structural):
         If specified, all object lookups will be relative to this path.
     contents:
         Individual objects (e.g. functions, classes, methods) being documented.
+        May also be the string "auto", to document every public submodule found
+        in the package. Note that an omitted (or empty) contents field is not the
+        same as "auto": a section with a title but no contents acts as a heading
+        for the sections that follow it.
     """
 
     kind: Literal["section"] = "section"
@@ -78,7 +82,9 @@ class Section(_Structural):
     subtitle: Optional[str] = None
     desc: Optional[str] = None
     package: Union[str, None, MISSING] = MISSING()
-    contents: ContentList = []
+    # note that ContentList must come first in the union: validation.py reports
+    # only the first branch's errors, and those are the useful ones here
+    contents: Union[ContentList, Literal["auto"]] = []
     options: Optional["AutoOptions"] = None
 
     def __init__(self, **data):

@@ -8,4 +8,11 @@ try:
         validator,
     )  # noqa
 except ImportError:
-    from pydantic import BaseModel, Field, Extra, PrivateAttr, ValidationError, validator  # noqa
+    from pydantic import (  # noqa
+        BaseModel,
+        Field,
+        Extra,
+        PrivateAttr,
+        ValidationError,
+        validator,
+    )

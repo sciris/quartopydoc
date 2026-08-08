@@ -101,6 +101,11 @@ ipython_config.py
 #   install all needed dependencies.
 #Pipfile.lock
 
+# uv
+#   the lockfile is deliberately not tracked: dependency bounds in pyproject.toml
+#   are the source of truth, and uv regenerates this on every sync
+uv.lock
+
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 

@@ -27,8 +27,12 @@ from griffe import (
     DocstringSectionReceives,
     DocstringSectionReturns,
     DocstringSectionText,
+    DocstringSectionTypeAliases,
+    DocstringSectionTypeParameters,
     DocstringSectionWarns,
     DocstringSectionYields,
+    DocstringTypeAlias,
+    DocstringTypeParameter,
     DocstringWarn,
     DocstringYield,
 )

@@ -3,6 +3,7 @@ from quartodoc._griffe_compat import AliasResolutionError
 from quartodoc import get_object
 from quartodoc import layout as lo
 from quartodoc.builder.blueprint import (
+    _is_public_module,
     _non_default_entries,
     _resolve_alias,
     BlueprintTransformer,
@@ -317,3 +318,59 @@ def test_blueprint_member_options():
 
     # this currently does not apply to members of members
     assert doc_a_class.members[0].signature_name == "relative"
+
+
+@pytest.mark.parametrize(
+    "parts, expected",
+    [
+        (("blocks",), True),
+        (("pandoc", "blocks"), True),
+        (("_pydantic_compat",), False),
+        (("__main__",), False),
+        (("_griffe_compat", "dataclasses"), False),
+        (("tests", "example"), False),
+        (("pandoc", "test_blocks"), False),
+        (("conftest",), False),
+    ],
+)
+def test_is_public_module(parts, expected):
+    assert _is_public_module(parts) is expected
+
+
+def test_blueprint_section_contents_auto():
+    layout = lo.Layout(
+        package="quartodoc.pandoc",
+        sections=[lo.Section(title="All modules", contents="auto")],
+    )
+
+    res = blueprint(layout)
+    pages = res.sections[0].contents
+
+    assert [page.path for page in pages] == ["blocks", "components", "inlines"]
+
+
+def test_blueprint_section_empty_contents_is_a_heading():
+    """A section with a title but no contents is a heading, not a request to
+    auto-populate the section from the package."""
+
+    layout = lo.Layout(
+        package="quartodoc.pandoc",
+        sections=[
+            lo.Section(title="A heading"),
+            lo.Section(subtitle="Some blocks", contents=["blocks"]),
+        ],
+    )
+
+    res = blueprint(layout)
+
+    assert res.sections[0].contents == []
+    assert [page.path for page in res.sections[1].contents] == ["blocks"]
+
+
+def test_blueprint_section_contents_auto_no_package():
+    layout = lo.Layout(sections=[lo.Section(title="All modules", contents="auto")])
+
+    with pytest.raises(ValueError) as exc_info:
+        blueprint(layout)
+
+    assert "no package is configured" in str(exc_info.value)
