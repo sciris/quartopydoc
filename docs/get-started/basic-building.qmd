@@ -9,6 +9,11 @@ jupyter:
 
 **tl;dr**: Once you've configured quartodoc in your `_quarto.yml` file, use the following commands to build and preview a documentation site.
 
+:::{.callout-tip}
+For a higher-level workflow that wraps these commands and also manages
+notebooks, previewing, and publishing, see [the qpyd CLI](qpyd-cli.qmd).
+:::
+
 ## `quartodoc build`: Create doc files
 
 Automatically generate `.qmd` files with reference api documentation.  This is written by default to the reference/ folder in your quarto project.

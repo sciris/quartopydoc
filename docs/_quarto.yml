@@ -58,6 +58,7 @@ website:
             - get-started/basic-docs.qmd
             - get-started/basic-content.qmd
             - get-started/basic-building.qmd
+            - get-started/qpyd-cli.qmd
             - get-started/crossrefs.qmd
             - get-started/sidebar.qmd
             - get-started/extending.qmd
