@@ -106,13 +106,6 @@ ipython_config.py
 #   are the source of truth, and uv regenerates this on every sync
 uv.lock
 
-# `make docs-build-readme` renders into the repo root, leaving these behind
-# alongside the README it generates
-/index.html
-/objects.json
-/objects.txt
-/objects-test.txt
-
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 

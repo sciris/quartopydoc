@@ -1,16 +1,12 @@
-# Overview
-
 **quartopydoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org). It is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
 
-`quartopydoc` is a fork of [`quartodoc`](https://github.com/machow/quartodoc), created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what this fork adds on top, see [differences from quartodoc](#differences-from-quartodoc). For Posit's more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/).
+`quartopydoc` is a fork of [`quartodoc`](https://github.com/machow/quartodoc), created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what this fork adds on top, see [differences from quartodoc](#differences-from-quartodoc). For Posit’s more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/).
 
 Check out the below screencast for a walkthrough of creating a documentation site, or read on for instructions.
 
 <p align="center">
 
-<a href="https://www.loom.com/share/fb4eb736848e470b8409ba46b514e2ed">
-<img src="https://cdn.loom.com/sessions/thumbnails/fb4eb736848e470b8409ba46b514e2ed-00001.gif" width="75%">
-</a>
+<a href="https://www.loom.com/share/fb4eb736848e470b8409ba46b514e2ed"> <img src="https://cdn.loom.com/sessions/thumbnails/fb4eb736848e470b8409ba46b514e2ed-00001.gif" width="75%"> </a>
 </p>
 
 <br>
@@ -29,11 +25,7 @@ python -m pip install git+https://github.com/sciris/quartopydoc.git
 
 Note that the package is installed as `quartopydoc`, but imported as `quartodoc`.
 
-> [!IMPORTANT]
->
-> ### Install Quarto
->
-> If you haven’t already, you’ll need to [install Quarto](https://quarto.org/docs/get-started/) before you can use quartodoc.
+> **Important:** if you haven’t already, you’ll need to [install Quarto](https://quarto.org/docs/get-started/) before you can use quartodoc.
 
 ## Basic use
 
