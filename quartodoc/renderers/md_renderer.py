@@ -317,7 +317,7 @@ class MdRenderer(Renderer):
         if el == "None":
             if self.render_interlinks:
                 # Render as markdown link like other types
-                return f"[None](`None`)"
+                return "[None](`None`)"
             else:
                 # Render without backticks like any instance (e.g. 1, "a")
                 return "None"
@@ -504,8 +504,6 @@ class MdRenderer(Renderer):
             raw_attrs = [x for x in el.members if x.obj.is_attribute]
             raw_meths = [x for x in el.members if x.obj.is_function]
             raw_classes = [x for x in el.members if x.obj.is_class]
-
-            header = "| Name | Description |\n| --- | --- |"
 
             # attribute summary table ----
             # docstrings can define an attributes section. If that exists on

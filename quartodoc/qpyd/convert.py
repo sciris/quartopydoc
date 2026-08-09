@@ -10,7 +10,6 @@ cells into a flat script (closely matching the original ``quarto_utils.py``).
 
 import subprocess
 import sys
-from pathlib import Path
 
 import sciris as sc
 

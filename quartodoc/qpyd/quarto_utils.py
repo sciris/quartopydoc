@@ -282,7 +282,7 @@ def execute_notebooks(*args, folders=None, tidy=True, debug=False):
         lbkwargs=dict(verbose=False),
         serial=debug,
     )
-    string += sc.strjoin(out, sep=f'\n\n\n{"—"*90}\n')
+    string += sc.strjoin(out, sep=f'\n\n\n{"—" * 90}\n')
     for nb, res in zip(notebooks, out):
         results[str(nb)] = res
 
