@@ -1,4 +1,8 @@
-"""quartodoc is a package for building delightful python API documentation.
+"""
+quartopydoc is a package for building delightful python API documentation.
+
+It is a fork of quartodoc by Michael Chow, with formatting customizations and
+extra utilities for working with notebooks.
 """
 
 # flake8: noqa

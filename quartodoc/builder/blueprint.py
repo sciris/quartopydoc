@@ -70,8 +70,32 @@ def _identify_files_to_document(
     return {p.resolve() for p in result}
 
 
+def _is_public_module(parts: "tuple[str, ...] | list[str]") -> bool:
+    """Whether a dotted module path refers to a public, documentable module.
+
+    Excludes private modules (any part starting with an underscore, which also
+    covers dunders like ``__main__``), and the test modules that most packages
+    ship alongside their source.
+    """
+
+    for part in parts:
+        if part.startswith("_"):
+            return False
+        if part in {"tests", "test", "testing", "conftest"}:
+            return False
+        if part.startswith("test_"):
+            return False
+
+    return True
+
+
 def _auto_contents_from_package(package_name: str) -> list[Auto]:
-    """Return Auto entries for every .py file in *package_name*, excluding __init__ files."""
+    """Return Auto entries for every public submodule of *package_name*.
+
+    Private and test modules are skipped, since they are not part of a package's
+    public API. See [](`~quartodoc.builder.blueprint._is_public_module`).
+    """
+
     spec = importlib.util.find_spec(package_name)
     if spec is None or not spec.submodule_search_locations:
         return []
@@ -85,7 +109,9 @@ def _auto_contents_from_package(package_name: str) -> list[Auto]:
 
     contents = []
     for file in sorted(files):
-        parts = list(file.relative_to(pkg_path).with_suffix("").parts)
+        parts = file.relative_to(pkg_path).with_suffix("").parts
+        if not _is_public_module(parts):
+            continue
         contents.append(Auto(name=".".join(parts)))
     return contents
 
@@ -294,29 +320,34 @@ class BlueprintTransformer(PydanticTransformer):
 
     @dispatch
     def enter(self, el: Section):
-        if el.contents:
-            # Already have contents: still recurse so child Auto entries get
-            # transformed into Doc elements (don't short-circuit the visitor).
+        if el.contents != "auto":
+            # Note that an empty contents field is not a request to auto-populate:
+            # a section with a title but no contents is a heading for the sections
+            # that follow it. Recurse either way, so that any child Auto entries
+            # get transformed into Doc elements.
             return super().enter(el)
 
         package = self.crnt_package
         label = el.title or el.subtitle or "(untitled)"
 
         if not package:
-            _log.warning(
-                f"Section '{label}' has no contents and no package is configured."
-                " Cannot auto-populate contents."
+            raise ValueError(
+                f'Section "{label}" set contents to "auto", but no package is'
+                " configured. Set the package field on the section, or in the"
+                " top-level quartodoc config."
             )
-            return el
-
-        _log.warning(
-            f"Section '{label}' has no contents. Auto-populating from package '{package}'."
-        )
 
         contents = _auto_contents_from_package(package)
         if not contents:
-            _log.warning(f"No Python files found in package '{package}'.")
-            return el
+            raise ValueError(
+                f'Section "{label}" set contents to "auto", but no public'
+                f' submodules were found in package "{package}".'
+            )
+
+        _log.info(
+            f'Auto-populated section "{label}" with {len(contents)} submodules'
+            f' from package "{package}".'
+        )
 
         new = el.copy()
         new.contents = contents
@@ -432,6 +463,7 @@ class BlueprintTransformer(PydanticTransformer):
             children,
             flat=is_flat,
             signature_name=el.signature_name,
+            short_anchors=el.short_anchors,
         )
 
     def _fetch_members(self, el: Auto, obj: dc.Object | dc.Alias):

@@ -3,6 +3,7 @@ from quartodoc._griffe_compat import AliasResolutionError
 from quartodoc import get_object
 from quartodoc import layout as lo
 from quartodoc.builder.blueprint import (
+    _is_public_module,
     _non_default_entries,
     _resolve_alias,
     BlueprintTransformer,
@@ -147,6 +148,65 @@ def test_blueprint_auto_anchor(bp):
     assert isinstance(res, lo.DocFunction)
     assert res.name == "a_func"
     assert res.anchor == "quartodoc.tests.example.a_func"
+
+
+@pytest.mark.parametrize(
+    "name, anchor",
+    [
+        # a function is anchored on its name alone
+        ("a_func", "a_func"),
+        # a class keeps only the class name
+        ("AClass", "AClass"),
+        # a method keeps the class it hangs off of
+        ("AClass.a_method", "AClass.a_method"),
+        ("AClass.a_attr", "AClass.a_attr"),
+    ],
+)
+def test_blueprint_short_anchors(name, anchor):
+    auto = lo.Auto(name=name, package=TEST_MOD, short_anchors=True, members=[])
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == anchor
+    # the object path itself is untouched, so inventory entries stay fully qualified
+    assert res.obj.path == f"{TEST_MOD}.{name}"
+
+
+def test_blueprint_short_anchors_module():
+    "A module has no module path to strip, so it keeps its own name."
+
+    auto = lo.Auto(name=TEST_MOD, short_anchors=True, members=[])
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == "example"
+
+
+def test_blueprint_short_anchors_via_alias():
+    """An object documented through an alias is shortened relative to where it is
+    exposed, not where it is defined."""
+
+    auto = lo.Auto(name="MdRenderer.render", package="quartodoc", short_anchors=True)
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == "MdRenderer.render"
+    assert res.obj.path == "quartodoc.MdRenderer.render"
+    assert res.obj.canonical_path == "quartodoc.renderers.md_renderer.MdRenderer.render"
+
+
+def test_collect_short_anchors_uri():
+    "The page URI uses the shortened anchor, but items keep their full names."
+
+    from quartodoc import collect
+
+    layout = lo.Layout(
+        package=TEST_MOD,
+        options={"short_anchors": True},
+        sections=[lo.Section(title="x", contents=[lo.Auto(name="AClass", members=[])])],
+    )
+
+    _, items = collect(blueprint(layout), base_dir="api")
+    uris = {item.name: item.uri for item in items}
+
+    assert uris[f"{TEST_MOD}.AClass"] == "api/AClass.html#AClass"
 
 
 def test_blueprint_lookup_error_message(bp):
@@ -317,3 +377,59 @@ def test_blueprint_member_options():
 
     # this currently does not apply to members of members
     assert doc_a_class.members[0].signature_name == "relative"
+
+
+@pytest.mark.parametrize(
+    "parts, expected",
+    [
+        (("blocks",), True),
+        (("pandoc", "blocks"), True),
+        (("_pydantic_compat",), False),
+        (("__main__",), False),
+        (("_griffe_compat", "dataclasses"), False),
+        (("tests", "example"), False),
+        (("pandoc", "test_blocks"), False),
+        (("conftest",), False),
+    ],
+)
+def test_is_public_module(parts, expected):
+    assert _is_public_module(parts) is expected
+
+
+def test_blueprint_section_contents_auto():
+    layout = lo.Layout(
+        package="quartodoc.pandoc",
+        sections=[lo.Section(title="All modules", contents="auto")],
+    )
+
+    res = blueprint(layout)
+    pages = res.sections[0].contents
+
+    assert [page.path for page in pages] == ["blocks", "components", "inlines"]
+
+
+def test_blueprint_section_empty_contents_is_a_heading():
+    """A section with a title but no contents is a heading, not a request to
+    auto-populate the section from the package."""
+
+    layout = lo.Layout(
+        package="quartodoc.pandoc",
+        sections=[
+            lo.Section(title="A heading"),
+            lo.Section(subtitle="Some blocks", contents=["blocks"]),
+        ],
+    )
+
+    res = blueprint(layout)
+
+    assert res.sections[0].contents == []
+    assert [page.path for page in res.sections[1].contents] == ["blocks"]
+
+
+def test_blueprint_section_contents_auto_no_package():
+    layout = lo.Layout(sections=[lo.Section(title="All modules", contents="auto")])
+
+    with pytest.raises(ValueError) as exc_info:
+        blueprint(layout)
+
+    assert "no package is configured" in str(exc_info.value)

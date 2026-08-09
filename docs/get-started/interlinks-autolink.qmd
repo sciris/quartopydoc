@@ -10,7 +10,7 @@ Here is a basic example of enabling autolink mode in your `_quarto.yml` file:
 
 ```yaml
 filters:
-  # requires running quarto add machow/quartodoc
+  # requires running quarto add sciris/quartopydoc
   - interlinks
 
 interlinks:

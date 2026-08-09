@@ -1,6 +1,6 @@
 import pytest
 
-from quartodoc.layout import Layout, Page, Text, Section  # noqa
+from quartodoc.layout import Auto, Layout, Page, Text, Section  # noqa
 
 from quartodoc._pydantic_compat import ValidationError
 
@@ -9,8 +9,8 @@ from quartodoc._pydantic_compat import ValidationError
     "cfg, res",
     [
         (
-            {"kind": "page", "package": "abc", "path": "xyz", "contents": []},
-            Page(package="abc", path="xyz", contents=[]),
+            {"kind": "page", "package": "abc", "path": "xyz", "contents": ["abc"]},
+            Page(package="abc", path="xyz", contents=[Auto(name="abc")]),
         ),
         (
             {
@@ -29,6 +29,13 @@ def test_layout_from_config(cfg, res):
 
     layout = Layout(sections=[cfg])
     assert layout.sections[0] == res
+
+
+def test_page_contents_not_empty():
+    with pytest.raises(ValidationError) as exc_info:
+        Page(package="abc", path="xyz", contents=[])
+
+    assert "Page contents must not be empty" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(

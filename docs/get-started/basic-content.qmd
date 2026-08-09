@@ -57,6 +57,36 @@ quartodoc:
 
 The functions listed in `contents` are those that are available for import from the package (`quartodoc` in this instance).
 
+### Documenting every submodule
+
+Set `contents: auto` to document every public submodule of the package, rather than listing them out by hand:
+
+```yaml
+quartodoc:
+  package: quartodoc
+  sections:
+    - title: All modules
+      desc: ""
+      contents: auto
+```
+
+Submodules are discovered from the files in the package. Private modules (those with a leading underscore, at any level) and test modules are skipped, since they are not part of the package's public API.
+
+Note that leaving `contents` out entirely is not the same as setting it to `auto`. A section with a title but no contents is a heading for the sections that follow it, which is how you group subsections together:
+
+```yaml
+quartodoc:
+  package: quartodoc
+  sections:
+    - title: Data models   # a heading, not auto-populated
+    - subtitle: Structural
+      contents:
+        - layout.Layout
+    - subtitle: Docable
+      contents:
+        - layout.Doc
+```
+
 ## Module and class members
 
 Documentation for classes and modules can automatically include their members (e.g. class methods and attributes or everything defined inside a module, respectively).

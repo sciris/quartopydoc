@@ -14,7 +14,6 @@ which files are disposable. So:
 """
 
 import os
-from pathlib import Path
 
 import sciris as sc
 

@@ -12,10 +12,13 @@ markers = []
 testpaths = ["quartodoc"]
 
 [project]
-name = "quartodoc"
+# note that the distribution is named quartopydoc, but the package it installs
+# is still imported (and configured in _quarto.yml) as quartodoc
+name = "quartopydoc"
 authors = [{name="Michael Chow", email="michael.chow@posit.co"}]
+maintainers = [{name="Cliff Kerr", email="cliff.kerr@gatesfoundation.org"}]
 license.file = "LICENSE"
-description = "Generate API documentation with Quarto."
+description = "Generate API documentation with Quarto. A fork of quartodoc."
 readme = "README.md"
 keywords = ["documentation", "quarto"]
 classifiers = [
@@ -33,7 +36,7 @@ requires-python = ">=3.10"
 dependencies = [
     "black",
     "click",
-    "griffe >= 0.33",
+    "griffe >= 2.0",
     "sphobjinv >= 2.3.1",
     "tabulate >= 0.9.0",
     "importlib-metadata >= 5.1.0",
@@ -50,9 +53,10 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://machow.github.io/quartodoc"
-repository = "https://github.com/machow/quartodoc"
-ci = "https://github.com/machow/quartodoc/actions"
+homepage = "https://sciris.github.io/quartopydoc"
+repository = "https://github.com/sciris/quartopydoc"
+ci = "https://github.com/sciris/quartopydoc/actions"
+upstream = "https://github.com/machow/quartodoc"
 
 
 [project.scripts]

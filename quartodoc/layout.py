@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ._griffe_compat import dataclasses as dc
+from ._griffe_compat import AliasResolutionError
 import logging
 
 from enum import Enum
@@ -71,6 +72,10 @@ class Section(_Structural):
         If specified, all object lookups will be relative to this path.
     contents:
         Individual objects (e.g. functions, classes, methods) being documented.
+        May also be the string "auto", to document every public submodule found
+        in the package. Note that an omitted (or empty) contents field is not the
+        same as "auto": a section with a title but no contents acts as a heading
+        for the sections that follow it.
     """
 
     kind: Literal["section"] = "section"
@@ -78,7 +83,9 @@ class Section(_Structural):
     subtitle: Optional[str] = None
     desc: Optional[str] = None
     package: Union[str, None, MISSING] = MISSING()
-    contents: ContentList = []
+    # note that ContentList must come first in the union: validation.py reports
+    # only the first branch's errors, and those are the useful ones here
+    contents: Union[ContentList, Literal["auto"]] = []
     options: Optional["AutoOptions"] = None
 
     def __init__(self, **data):
@@ -233,6 +240,7 @@ class AutoOptions(_Base):
     package: Union[str, None, MISSING] = MISSING()
     member_order: Literal["alphabetical", "source"] = "alphabetical"
     member_options: Optional["AutoOptions"] = None
+    short_anchors: bool = False
 
     # for tracking fields users manually specify
     # so we can tell them apart from defaults
@@ -289,6 +297,12 @@ class Auto(AutoOptions):
         Defaults to alphabetical sorting.
     member_options:
         Options to apply to members. These can include any of the options above.
+    short_anchors:
+        Whether to strip the module path from anchors, so that e.g. the method
+        `pkg.mod.SomeClass.a_method` is anchored as `SomeClass.a_method` rather
+        than by its full path. Note that this only affects the anchor (the part
+        of a URL after the `#`); inventory entries are still keyed on the full
+        path, so interlinks are unaffected.
 
     """
 
@@ -322,6 +336,39 @@ class Link(_Docable):
     class Config:
         arbitrary_types_allowed = True
         extra = Extra.forbid
+
+
+def _shorten_anchor(obj: Union[dc.Object, dc.Alias]) -> str:
+    """Return the path of an object relative to the module that contains it.
+
+    For example, `quartodoc.ast.preview` becomes `preview`, and the method
+    `quartodoc.MdRenderer.render` becomes `MdRenderer.render`. Note that this walks
+    the object's own path rather than its canonical path, so an object documented
+    through an alias is shortened relative to where it is exposed, not where it is
+    defined.
+    """
+
+    parts = []
+    crnt = obj
+    while crnt is not None:
+        try:
+            is_module = crnt.kind.value == "module"
+        except AliasResolutionError:
+            # without the target we cannot tell where the module boundary is,
+            # so fall back to the fully qualified path
+            return obj.path
+
+        if is_module:
+            break
+
+        parts.append(crnt.name)
+        crnt = crnt.parent
+
+    if not parts:
+        # obj is itself a module, so there is no module path to strip
+        return obj.name
+
+    return ".".join(reversed(parts))
 
 
 class Doc(_Docable):
@@ -364,12 +411,14 @@ class Doc(_Docable):
         anchor: str = None,
         flat: bool = False,
         signature_name: str = "relative",
+        short_anchors: bool = False,
     ):
         if members is None:
             members = []
 
         kind = obj.kind.value
-        anchor = obj.path if anchor is None else anchor
+        if anchor is None:
+            anchor = _shorten_anchor(obj) if short_anchors else obj.path
 
         kwargs = {
             "name": name,

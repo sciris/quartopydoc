@@ -56,12 +56,12 @@ def generate_griffe_stub(out_path: Path, mod, submodules: list[str]):
 
 MAPPINGS = {
     "dataclasses": [
-        "_griffe.models",
-        "_griffe.mixins",
-        "_griffe.enumerations",
+        "griffe._internal.models",
+        "griffe._internal.mixins",
+        "griffe._internal.enumerations",
     ],
-    "docstrings": ["_griffe.docstrings.models"],
-    "expressions": ["_griffe.expressions"],
+    "docstrings": ["griffe._internal.docstrings.models"],
+    "expressions": ["griffe._internal.expressions"],
 }
 
 if __name__ == "__main__":

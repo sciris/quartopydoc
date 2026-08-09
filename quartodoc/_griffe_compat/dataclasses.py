@@ -11,6 +11,9 @@ from griffe import (
     Object,
     Parameter,
     Parameters,
+    TypeAlias,
+    TypeParameter,
+    TypeParameters,
 )
 from griffe import (
     DelMembersMixin,
@@ -28,4 +31,5 @@ from griffe import (
     ObjectKind,
     ParameterKind,
     Parser,
+    TypeParameterKind,
 )
