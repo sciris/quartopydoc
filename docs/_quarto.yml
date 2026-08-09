@@ -31,6 +31,8 @@ interlinks:
 
 website:
   title: "quartopydoc"
+  site-url: https://sciris.github.io/quartopydoc/
+  repo-url: https://github.com/sciris/quartopydoc/
   page-navigation: true
   navbar:
     left:
