@@ -151,9 +151,7 @@ def _excluded(path, base):
         # impossible, so do not exclude (an explicitly targeted path wins).
         return False
     # parts[:-1] are the directory components (drop the filename itself)
-    return any(
-        part in EXCLUDE_DIRS or part.startswith(".") for part in parts[:-1]
-    )
+    return any(part in EXCLUDE_DIRS or part.startswith(".") for part in parts[:-1])
 
 
 def discover_notebooks(paths=None, root=None):

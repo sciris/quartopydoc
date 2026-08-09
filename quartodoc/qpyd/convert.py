@@ -91,7 +91,9 @@ def qmd2py(qmd_path, py_path=None, keep_text=True):
             processed = []
             for line in content:
                 if line.lstrip().startswith(("%", "!")):
-                    processed.append(f"# {line}  # IPython not supported in Python files")
+                    processed.append(
+                        f"# {line}  # IPython not supported in Python files"
+                    )
                 else:
                     processed.append(line)
             parts.append(f"#%% Cell {cell_num}\n" + "\n".join(processed))
@@ -117,7 +119,9 @@ def _run(cmd, cwd=None):
             if tool == "quarto"
             else f"Install it (e.g. `pip install {tool}`)."
         )
-        raise RuntimeError(f"Required tool {tool!r} was not found on your PATH. {hint}") from e
+        raise RuntimeError(
+            f"Required tool {tool!r} was not found on your PATH. {hint}"
+        ) from e
     if proc.returncode != 0:
         raise RuntimeError(
             f"Command failed ({' '.join(cmd)}):\n{proc.stdout}\n{proc.stderr}"

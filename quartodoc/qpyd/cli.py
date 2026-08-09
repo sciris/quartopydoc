@@ -75,7 +75,9 @@ def init_cmd(path, package):
 
 
 @cli.command("clean")
-@click.option("--dry-run", is_flag=True, help="Show what would be deleted, without deleting.")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be deleted, without deleting."
+)
 def clean_cmd(dry_run):
     """Remove auto-generated temporary files (my-*, example*) from the docs dir."""
     from .clean import clean_outputs

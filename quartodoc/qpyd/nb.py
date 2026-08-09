@@ -48,7 +48,9 @@ def check_cmd(paths, serial):
 
 
 @nb_cli.command("refresh")
-@click.option("--dry-run", is_flag=True, help="Show what would be deleted, without deleting.")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be deleted, without deleting."
+)
 def refresh_cmd(dry_run):
     """Delete cached copies of notebooks (_freeze/ and .jupyter_cache/)."""
     refresh_cache(dry_run=dry_run)
@@ -83,7 +85,9 @@ def to_ipynb_cmd(path, force):
 
 @nb_cli.command("clear")
 @click.argument("paths", nargs=-1, type=click.Path())
-@click.option("--dry-run", is_flag=True, help="Show what would be cleared, without writing.")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be cleared, without writing."
+)
 def clear_cmd(paths, dry_run):
     """Clear saved outputs from .ipynb notebooks and normalize them."""
     clear_outputs(*paths, dry_run=dry_run)
