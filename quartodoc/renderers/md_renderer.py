@@ -392,9 +392,10 @@ class MdRenderer(Renderer):
         """Render the header of a docstring, including any anchors."""
         _str_dispname = el.name
 
-        # TODO: support anchors that are not fully qualified paths?
-        # e.g. get_object, rather than quartodoc.get_object
-        _anchor = f"{{ #{el.obj.path} }}"
+        # note that the anchor is set when the Doc is created, so that the pages,
+        # the inventory, and any links between them all agree. See the
+        # short_anchors option on [](`quartodoc.layout.Auto`).
+        _anchor = f"{{ #{el.anchor} }}"
         return f"{'#' * self.crnt_header_level} {_str_dispname} {_anchor}"
 
     @dispatch

@@ -185,6 +185,29 @@ def test_render_doc_section_header_anchor(renderer):
     assert renderer.render_header(section) == dst
 
 
+@pytest.mark.parametrize(
+    "short_anchors, anchor",
+    [
+        (False, "quartodoc.tests.example.AClass.a_method"),
+        (True, "AClass.a_method"),
+    ],
+)
+def test_render_doc_header_uses_anchor(renderer, short_anchors, anchor):
+    """The rendered header must use the Doc's anchor, so that headings on a page
+    and URIs in the inventory cannot drift apart."""
+
+    bp = blueprint(
+        Auto(
+            name="AClass.a_method",
+            package="quartodoc.tests.example",
+            short_anchors=short_anchors,
+        )
+    )
+
+    assert bp.anchor == anchor
+    assert renderer.render_header(bp).endswith(f"{{ #{anchor} }}")
+
+
 # Big pieces -------------------------------------------------------------------
 # These are mostly snapshots
 

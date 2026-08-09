@@ -150,6 +150,65 @@ def test_blueprint_auto_anchor(bp):
     assert res.anchor == "quartodoc.tests.example.a_func"
 
 
+@pytest.mark.parametrize(
+    "name, anchor",
+    [
+        # a function is anchored on its name alone
+        ("a_func", "a_func"),
+        # a class keeps only the class name
+        ("AClass", "AClass"),
+        # a method keeps the class it hangs off of
+        ("AClass.a_method", "AClass.a_method"),
+        ("AClass.a_attr", "AClass.a_attr"),
+    ],
+)
+def test_blueprint_short_anchors(name, anchor):
+    auto = lo.Auto(name=name, package=TEST_MOD, short_anchors=True, members=[])
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == anchor
+    # the object path itself is untouched, so inventory entries stay fully qualified
+    assert res.obj.path == f"{TEST_MOD}.{name}"
+
+
+def test_blueprint_short_anchors_module():
+    "A module has no module path to strip, so it keeps its own name."
+
+    auto = lo.Auto(name=TEST_MOD, short_anchors=True, members=[])
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == "example"
+
+
+def test_blueprint_short_anchors_via_alias():
+    """An object documented through an alias is shortened relative to where it is
+    exposed, not where it is defined."""
+
+    auto = lo.Auto(name="MdRenderer.render", package="quartodoc", short_anchors=True)
+    res = BlueprintTransformer().visit(auto)
+
+    assert res.anchor == "MdRenderer.render"
+    assert res.obj.path == "quartodoc.MdRenderer.render"
+    assert res.obj.canonical_path == "quartodoc.renderers.md_renderer.MdRenderer.render"
+
+
+def test_collect_short_anchors_uri():
+    "The page URI uses the shortened anchor, but items keep their full names."
+
+    from quartodoc import collect
+
+    layout = lo.Layout(
+        package=TEST_MOD,
+        options={"short_anchors": True},
+        sections=[lo.Section(title="x", contents=[lo.Auto(name="AClass", members=[])])],
+    )
+
+    _, items = collect(blueprint(layout), base_dir="api")
+    uris = {item.name: item.uri for item in items}
+
+    assert uris[f"{TEST_MOD}.AClass"] == "api/AClass.html#AClass"
+
+
 def test_blueprint_lookup_error_message(bp):
     auto = lo.Auto(name="quartodoc.bbb.ccc")
 

@@ -40,6 +40,24 @@ Here are some examples:
 | ``[link text](/reference/MdRenderer.qmd)`` | [link text](/reference/MdRenderer.qmd) |
 
 
+## Shortening anchors
+
+When several objects are documented on one page, each gets an anchor (the part of a URL after the `#`). By default that anchor is the object's full path, so a method lands at a URL like `/reference/MdRenderer.html#quartodoc.MdRenderer.render`.
+
+Set the `short_anchors` option to strip the module path, which shortens that to `/reference/MdRenderer.html#MdRenderer.render`:
+
+```yaml
+quartodoc:
+  package: quartodoc
+  options:
+    short_anchors: true
+```
+
+Only the anchor changes. File names are unaffected, and inventory entries are still keyed on the full path, so interlinks like ``[](`quartodoc.MdRenderer.render`)`` keep working and resolve to the new anchor.
+
+Two things to keep in mind before turning this on. Anchors only need to be unique within a page, and objects from the same module cannot collide once the shared module path is stripped — but a hand-written [Page](./basic-content.qmd#page-layout-element) that gathers objects from *different* modules can, if two of them have the same class-relative name. And if you are migrating from Sphinx, note that the default full-path anchors are identical to the ones Sphinx generates, so shortening them means old links with an anchor will land on the page but not on the heading.
+
+
 ## Linking by function name
 
 Use quartodoc's [interlinking filter](./interlinks.qmd) to link to functions using only their names:
