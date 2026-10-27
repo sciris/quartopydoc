@@ -65,6 +65,36 @@ def test_clean_skips_under_hook_guard(tmp_path, monkeypatch):
     assert junk.exists()
 
 
+def test_clean_removes_matching_folders(tmp_path, monkeypatch):
+    (tmp_path / "_quarto.yml").write_text(
+        "qpyd:\n  clean:\n    - 'guide/results'\n    - 'guide/keep'\n"
+    )
+    monkeypatch.chdir(tmp_path)
+    results = tmp_path / "guide" / "results"
+    results.mkdir(parents=True)
+    (results / "out.csv").write_text("x")
+    keep = tmp_path / "guide" / "keep"
+    keep.mkdir()
+    (keep / "page.qmd").write_text("source!")
+    removed = clean.clean_outputs()
+    assert removed == [results.resolve()]
+    assert not results.exists()
+    assert (keep / "page.qmd").exists()  # a folder with sources is left alone
+
+
+def test_clean_skips_for_partial_quarto_render(tmp_path, monkeypatch):
+    (tmp_path / "_quarto.yml").write_text("qpyd:\n  clean:\n    - '**/my-*.png'\n")
+    monkeypatch.chdir(tmp_path)
+    junk = tmp_path / "my-fig.png"
+    junk.write_bytes(b"x")
+    monkeypatch.delenv("QUARTO_PROJECT_RENDER_ALL", raising=False)
+    monkeypatch.setenv("QUARTO_PROJECT_OUTPUT_DIR", "_site")
+    assert clean.clean_outputs() == []
+    assert junk.exists()
+    monkeypatch.setenv("QUARTO_PROJECT_RENDER_ALL", "1")
+    assert clean.clean_outputs() == [junk.resolve()]
+
+
 # --- refresh: project-scoped, finds nested caches (HIGH/LOW) ----------------
 
 

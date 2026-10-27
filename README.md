@@ -143,6 +143,10 @@ Everything documented for quartodoc still applies. On top of it, quartopydoc add
 
 **griffe 2.x.** quartopydoc requires griffe 2.0 or later, and tracks its current API.
 
+**`qd.get_version()` and `qd.get_attr()`.** Read the documented package's version, or any other literal module-level constant (e.g. `__versiondate__`), from its source without importing it, for use in `_variables.py`. `import quartodoc` itself is also fast now, since the rest of the API is imported on first use.
+
+**A faster interlinks filter.** The `interlinks` Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project's `.quarto/interlinks` folder) instead of decoding them on every page. With large inventories (e.g. Python, NumPy and pandas), this saves a second or more per rendered page.
+
 Note: installing both `quartopydoc` and `quartodoc` into the same environment will conflict, since both provide the `quartodoc` package and the `quartodoc` command. All `quartodoc` functionality is available from `quartopydoc`.
 
 ## Learning more

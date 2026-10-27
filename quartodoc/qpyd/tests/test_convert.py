@@ -27,6 +27,34 @@ def test_qmd2py_unclosed_raises(tmp_path):
         convert.qmd2py(qmd)
 
 
+def test_qmd2py_honours_eval_and_error(tmp_path):
+    qmd = tmp_path / "n.qmd"
+    qmd.write_text(
+        "```{python}\nx = 1\n```\n\n"
+        "```{python}\n#| eval: false\nimport not_a_real_module\n```\n\n"
+        "```{python}\n#| error: true\nraise ValueError('shown on the page')\n```\n\n"
+        "```{python}\nprint('done', x)\n```\n"
+    )
+    py = convert.qmd2py(qmd)
+    text = py.read_text()
+    assert "# import not_a_real_module" in text  # eval: false -> commented out
+    ns = {}
+    exec(compile(text, str(py), "exec"), ns)  # the error: true cell doesn't stop it
+    assert ns["x"] == 1
+
+
+def test_qmd2py_document_execute_options(tmp_path):
+    qmd = tmp_path / "n.qmd"
+    qmd.write_text(
+        "---\nexecute:\n  eval: false\n---\n\n"
+        "```{python}\nimport not_a_real_module\n```\n\n"
+        "```{python}\n#| eval: true\ny = 2\n```\n"
+    )
+    text = convert.qmd2py(qmd).read_text()
+    assert "# import not_a_real_module" in text
+    assert "\ny = 2" in text  # a cell can opt back in
+
+
 def test_to_py_on_qmd(tmp_path):
     qmd = tmp_path / "n.qmd"
     qmd.write_text("```{python}\nx = 1\n```\n")

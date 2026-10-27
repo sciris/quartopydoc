@@ -252,7 +252,7 @@ def interlinks(config, dry_run, fast):
 
     fast = cfg_fast or fast
 
-    for k, v in interlinks["sources"].items():
+    for k, v in (interlinks.get("sources") or {}).items():
         # don't include user's own docs (users don't need to specify their own docs in
         # the interlinks config anymore, so this is for backwards compat).
         if v["url"] == "/":

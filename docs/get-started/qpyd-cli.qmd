@@ -48,17 +48,31 @@ Runs the pre-render build steps, in order:
 1. `quartodoc build` — generate the API reference pages.
 2. Customize aliases — add short cross-reference aliases (e.g. `pkg.Thing` for
    `pkg.submodule.Thing`) to `objects.json`.
-3. `quartodoc interlinks` — build interlink inventories.
+3. `quartodoc interlinks` — build interlink inventories (only if `interlinks.sources`
+   lists other sites' docs).
 4. Build a Sphinx-compatible `objects.inv` so other projects can resolve your
    references via intersphinx.
+5. Run any project-specific commands listed in `qpyd.prerender.commands`.
+
+Before these, it writes the values from [`_variables.py`](#_variables.py) to
+`_variables.yml`.
 
 ```bash
-qpyd prerender
+qpyd prerender          # skips the build if nothing it depends on changed
+qpyd prerender --force  # rebuild anyway (or set QPYD_FORCE_PRERENDER=1)
 ```
+
+The build only depends on the documented package's source, quartodoc itself,
+`_quarto.yml`, and any `qpyd.prerender.inputs`, so it is skipped when none of
+these changed since the last build and its outputs (`objects.json`,
+`objects.inv`, the API pages, and any `qpyd.prerender.outputs`) are all there.
+The hash of the inputs is kept in `.quarto/qpyd-prerender.json`.
 
 The documented package name is read from the `quartodoc.package` key in your
 `_quarto.yml`. This is the command you typically wire into your project's
-`pre-render` hook (see [below](#configuring-_quartoyml)).
+`pre-render` hook (see [below](#configuring-_quartoyml)). As a hook, it does
+nothing when Quarto is rendering only some pages (e.g. `quarto render page.qmd`),
+so those renders stay fast.
 
 ### `qpyd render`
 
@@ -108,8 +122,10 @@ qpyd init docs --package your_package
 ### `qpyd clean`
 
 Deletes auto-generated scratch files after a build. This is **opt-in**: it only
-removes files matching the `qpyd.clean` glob patterns in your `_quarto.yml`, and
-it never deletes source files (`.qmd`, `.ipynb`, `.py`, `.md`).
+removes files (and folders) matching the `qpyd.clean` glob patterns in your
+`_quarto.yml`, and it never deletes source files (`.qmd`, `.ipynb`, `.py`,
+`.md`), or folders that contain any. Like `qpyd prerender`, it does nothing as a
+`post-render` hook for renders of only some pages.
 
 ```bash
 qpyd clean            # delete configured scratch files
@@ -139,7 +155,9 @@ qpynb check --serial # one at a time (useful for debugging)
   parallel so a subsequent full-site render is fast.
 * **`check`** is a pure validation pass — it executes each notebook to confirm
   it runs without error, but writes no cache and leaves nothing behind. This is
-  ideal for CI.
+  ideal for CI. It runs what the rendered page would: cells with `eval: false`
+  are skipped, and errors in cells with `error: true` are allowed (both as `#|`
+  cell options or in the page's `execute` options).
 
 During `run`, each per-notebook render sets `QPYD_SKIP_HOOKS=1`, so a project
 `pre-render: qpyd prerender` hook becomes a no-op rather than rebuilding the
@@ -186,10 +204,24 @@ public, non-callable, YAML-serializable values are passed to `quarto render` as
 
 ```python
 # _variables.py
-import your_package
-version = your_package.__version__
-versiondate = your_package.__versiondate__
+import quartodoc as qd
+
+version = qd.get_version()
+versiondate = qd.get_attr("__versiondate__")
 ```
+
+`qd.get_version()` and `qd.get_attr()` read the documented package (the
+`quartodoc.package` key) from its source, without importing it, which keeps
+renders fast even for packages that are slow to import:
+
+* `get_version(package=None)` returns the package's `__version__` if its source
+  defines one as a literal, and otherwise the installed version (e.g. for
+  versions from git tags).
+* `get_attr(name, package=None, default=...)` returns any module-level constant
+  that is assigned a literal value (a string, number, list, dict, …), looking in
+  the package's `version.py`, `_version.py`, `__version__.py`, `__about__.py`
+  and `__init__.py`. A dotted name says which module to read, e.g.
+  `qd.get_attr("pkg.meta.__citation__")`.
 
 Values are YAML-encoded, so version strings survive intact (e.g. `"1.10"` is
 passed as the string `'1.10'`, not coerced to the number `1.1`). Reference them
@@ -198,6 +230,17 @@ in documents with the [`meta` shortcode](https://quarto.org/docs/authoring/varia
 ```markdown
 Docs for version {{{< meta version >}}} ({{{< meta versiondate >}}}).
 ```
+
+`qpyd prerender` also writes them to `_variables.yml` (keeping any other keys
+there), so the [`var` shortcode](https://quarto.org/docs/authoring/variables.html#var)
+works too, including when the site is rendered with a plain `quarto render`:
+
+```markdown
+Docs for version {{{< var version >}}}.
+```
+
+Since `_variables.py` runs on every render, keep it quick: prefer `qd.get_version()`
+and `qd.get_attr()` to importing a large package.
 
 ## Configuring `_quarto.yml`
 
@@ -212,6 +255,11 @@ quartodoc:
   package: your_package        # used by prerender for aliases / objects.inv
 
 qpyd:
+  prerender:                   # optional project-specific pre-render steps
+    commands:                  # run after the standard steps, in the docs folder
+      - python make_index.py
+    inputs: [make_index.py]    # extra files the build depends on (globs allowed)
+    outputs: [index.json]      # extra files it creates
   clean:                       # optional glob patterns for `qpyd clean`
     - '**/my-*.png'            # source files are never deleted, even if matched
 

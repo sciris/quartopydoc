@@ -12,6 +12,8 @@ package), for example::
 These are collected into a dict (skipping private names, callables, and
 anything that is not YAML-serialisable) and turned into ``quarto render``
 metadata flags (``-M key:value``) so they can be referenced in documents.
+They are also written to ``_variables.yml`` (see :func:`write_variables_yml`),
+so the ``var`` shortcode works with a plain ``quarto render`` as well.
 """
 
 import runpy
@@ -20,6 +22,8 @@ from pathlib import Path
 import yaml
 
 from .config import VARIABLES_PY, docs_dir
+
+VARIABLES_YML = "_variables.yml"
 
 
 def load_variables(path=None):
@@ -88,3 +92,31 @@ def variables_to_args(variables):
 def variable_args(path=None):
     """Convenience wrapper: load ``_variables.py`` and return its ``-M`` args."""
     return variables_to_args(load_variables(path))
+
+
+def write_variables_yml(path=None, yml_path=None):
+    """
+    Write the values from ``_variables.py`` into ``_variables.yml``, so they can
+    be used with Quarto's ``var`` shortcode (``{{< var version >}}``) however
+    the site is rendered.
+
+    Does nothing if there is no ``_variables.py``. Other keys already in
+    ``_variables.yml`` are kept, and the file is only rewritten if a value
+    changed (so it doesn't look modified to git or Quarto).
+
+    Returns the variables written, or ``None`` if the file was left as is.
+    """
+    variables = load_variables(path)
+    if not variables:
+        return None
+    if yml_path is None:
+        yml_path = (Path(path).parent if path else docs_dir()) / VARIABLES_YML
+    yml_path = Path(yml_path)
+    existing = {}
+    if yml_path.exists():
+        existing = yaml.safe_load(yml_path.read_text()) or {}
+    updated = {**existing, **variables}
+    if updated == existing:
+        return None
+    yml_path.write_text(yaml.safe_dump(updated, sort_keys=False))
+    return variables

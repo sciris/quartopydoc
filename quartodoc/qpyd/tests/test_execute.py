@@ -45,3 +45,19 @@ def test_refresh_empty(tmp_path, monkeypatch):
     (tmp_path / "_quarto.yml").write_text("quartodoc:\n  package: x\n")
     monkeypatch.chdir(tmp_path)
     assert execute.refresh_cache() == []
+
+
+def test_runnable_py_does_not_shadow_imports(tmp_path):
+    # A notebook called numpy.qmd must not become numpy.py, which would shadow
+    # NumPy itself (the script's folder is first on sys.path when it runs)
+    qmd = tmp_path / "numpy.qmd"
+    qmd.write_text("```{python}\nimport json\n```\n")
+    out = tmp_path / "out"
+    out.mkdir()
+    py = execute._make_runnable_py(qmd, out)
+    assert py.name != "numpy.py"
+    assert py.parent == out
+
+
+def test_failure_output_includes_stdout():
+    assert "Traceback" in execute._output_tail(b"Traceback: boom", b"")

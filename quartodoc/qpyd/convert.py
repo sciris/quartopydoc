@@ -12,6 +12,7 @@ import subprocess
 import sys
 
 import sciris as sc
+import yaml
 
 from .config import discover_notebooks
 
@@ -26,6 +27,12 @@ def qmd2py(qmd_path, py_path=None, keep_text=True):
 
     Lines starting with ``%`` or ``!`` (IPython magics / shell commands) are
     commented out since they are not valid Python.
+
+    Execution options are honoured as Quarto would: a cell with ``eval: false``
+    (as a ``#|`` cell option, or in the document's ``execute`` options) is
+    commented out, and one with ``error: true`` (whose errors appear in the
+    rendered page rather than failing the render) runs inside a ``try`` block,
+    so the script runs exactly what the rendered page runs.
 
     Args:
         qmd_path (str/Path): path to the ``.qmd`` file
@@ -84,9 +91,11 @@ def qmd2py(qmd_path, py_path=None, keep_text=True):
     # Build output
     parts = []
     cell_num = 0
+    doc_options = _document_execute_options(text)
     for kind, content in chunks:
         if kind == "code":
             cell_num += 1
+            options = {**doc_options, **_cell_options(content)}
             processed = []
             for line in content:
                 if line.lstrip().startswith(("%", "!")):
@@ -95,7 +104,22 @@ def qmd2py(qmd_path, py_path=None, keep_text=True):
                     )
                 else:
                     processed.append(line)
-            parts.append(f"#%% Cell {cell_num}\n" + "\n".join(processed))
+            header = f"#%% Cell {cell_num}"
+            if options.get("eval") is False:
+                commented = "\n".join(f"# {line}" for line in processed)
+                parts.append(f"{header} (eval: false, so not run)\n{commented}")
+            elif options.get("error") is True:
+                code = "\n".join(processed) + "\n"
+                parts.append(
+                    f"{header} (error: true, so errors are expected)\n"
+                    f"try:\n"
+                    f"    exec(compile({code!r}, 'cell {cell_num}', 'exec'))\n"
+                    f"except Exception as _qpyd_error:\n"
+                    f"    print(f'Cell {cell_num} raised (as allowed by error: true): "
+                    f"{{_qpyd_error!r}}')"
+                )
+            else:
+                parts.append(f"{header}\n" + "\n".join(processed))
         else:  # text
             commented = "\n".join(
                 f"# {line}" if line.strip() else "#" for line in content
@@ -105,6 +129,39 @@ def qmd2py(qmd_path, py_path=None, keep_text=True):
     output = "\n\n\n".join(parts) + "\n"
     sc.savetext(py_path, output)
     return py_path
+
+
+def _document_execute_options(text):
+    """The ``execute`` options in a ``.qmd`` file's YAML front matter."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return {}
+    for i, line in enumerate(lines[1:], start=1):
+        if line.strip() == "---":
+            try:
+                front = yaml.safe_load("\n".join(lines[1:i])) or {}
+            except yaml.YAMLError:
+                return {}
+            execute = front.get("execute") if isinstance(front, dict) else None
+            return execute if isinstance(execute, dict) else {}
+    return {}
+
+
+def _cell_options(content):
+    """The ``#|`` options at the top of a code cell (e.g. ``#| eval: false``)."""
+    option_lines = []
+    for line in content:
+        stripped = line.strip()
+        if not stripped.startswith("#|"):
+            break
+        option_lines.append(stripped[2:])
+    if not option_lines:
+        return {}
+    try:
+        options = yaml.safe_load("\n".join(option_lines))
+    except yaml.YAMLError:
+        return {}
+    return options if isinstance(options, dict) else {}
 
 
 def _run(cmd, cwd=None):

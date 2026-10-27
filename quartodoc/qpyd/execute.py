@@ -44,9 +44,15 @@ _JUPYTEXT_HINT = "Install it with `pip install jupytext`."
 
 
 def _make_runnable_py(path, out_dir):
-    """Produce a runnable ``.py`` for a ``.qmd`` or ``.ipynb`` in ``out_dir``."""
+    """
+    Produce a runnable ``.py`` for a ``.qmd`` or ``.ipynb`` in ``out_dir``.
+
+    The script's folder comes first on ``sys.path`` when it runs, so it is named
+    so it can't shadow a module the notebook imports (e.g. ``numpy.qmd`` ->
+    ``qpynb_numpy.py``, not ``numpy.py``).
+    """
     path = sc.path(path)
-    py_path = Path(out_dir) / (path.stem + ".py")
+    py_path = Path(out_dir) / f"qpynb_{path.stem}.py"
     if path.suffix == ".qmd":
         qmd2py(path, py_path)
     elif path.suffix == ".ipynb":
@@ -88,13 +94,22 @@ def execute_notebook(path):
                 )
             string = f"{YAY} {path.stem} executed successfully "
         except subprocess.CalledProcessError as e:
-            err = (e.stderr or b"").decode(errors="ignore")
-            string = f"{BOO} Execution failed for {path.stem}:\n{err[-1500:]}\n"
+            # IPython prints tracebacks to stdout, so show both streams
+            err = _output_tail(e.stdout, e.stderr)
+            string = f"{BOO} Execution failed for {path.stem}:\n{err}\n"
         except Exception as e:
             string = f"{BOO} Error processing {path.stem}: {e}\n"
     string += f"(time: {T.total:0.1f} s)"
     print(string)
     return string
+
+
+def _output_tail(stdout, stderr, n=1500):
+    """The last ``n`` characters of a failed process's output (stdout, then stderr)."""
+    text = "\n".join(
+        (stream or b"").decode(errors="ignore").rstrip() for stream in (stdout, stderr)
+    ).strip()
+    return text[-n:]
 
 
 def render_notebook(path, cwd=None):

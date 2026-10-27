@@ -125,6 +125,42 @@ def get_package_name(start=None, default=None):
     return quartodoc_cfg.get("package", default)
 
 
+def qpyd_config(start=None):
+    """Return the ``qpyd`` section of ``_quarto.yml`` (empty if not set)."""
+    data, _ = load_quarto_config(start)
+    return data.get("qpyd") or {}
+
+
+def as_list(value):
+    """Return ``value`` as a list (``None`` -> ``[]``, a string -> ``[string]``)."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value]
+    return list(value)
+
+
+def hook_skip_reason():
+    """
+    Return why a project hook (``qpyd prerender`` / ``qpyd clean``) should do
+    nothing, or ``None`` if it should run.
+
+    Hooks are skipped when ``QPYD_SKIP_HOOKS`` is set (see
+    :func:`.execute.render_notebook`), and when Quarto is rendering only some
+    of the project's pages (e.g. ``quarto render page.qmd``): Quarto sets
+    ``QUARTO_PROJECT_OUTPUT_DIR`` for every hook but ``QUARTO_PROJECT_RENDER_ALL``
+    only for full renders, and project-wide steps would make single-page renders
+    slow. Running ``qpyd prerender`` directly (outside Quarto) is never skipped.
+    """
+    if os.environ.get("QPYD_SKIP_HOOKS"):
+        return "QPYD_SKIP_HOOKS is set"
+    if os.environ.get("QUARTO_PROJECT_OUTPUT_DIR") and not os.environ.get(
+        "QUARTO_PROJECT_RENDER_ALL"
+    ):
+        return "Quarto is rendering selected pages only"
+    return None
+
+
 def is_python_qmd(path):
     """Return True if a ``.qmd`` file contains an executable ``{python}`` cell."""
     try:

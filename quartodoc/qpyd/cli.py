@@ -30,9 +30,17 @@ def cli(ctx):
 
 
 @cli.command("prerender")
-def prerender_cmd():
-    """Run pre-render build steps (API docs, aliases, interlinks, objects.inv)."""
-    prerender()
+@click.option(
+    "--force", is_flag=True, help="Rebuild even if the inputs haven't changed."
+)
+def prerender_cmd(force):
+    """
+    Run pre-render build steps (API docs, aliases, interlinks, objects.inv).
+
+    The build is skipped if the package, quartodoc and the docs config haven't
+    changed since the last one.
+    """
+    prerender(force=force)
 
 
 @cli.command("render", context_settings=_PASSTHROUGH)
@@ -79,7 +87,7 @@ def init_cmd(path, package):
     "--dry-run", is_flag=True, help="Show what would be deleted, without deleting."
 )
 def clean_cmd(dry_run):
-    """Remove auto-generated temporary files (my-*, example*) from the docs dir."""
+    """Remove the temporary files matching the qpyd.clean patterns in _quarto.yml."""
     from .clean import clean_outputs
 
     clean_outputs(dry_run=dry_run)

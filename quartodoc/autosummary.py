@@ -160,10 +160,12 @@ def get_object(
 
     # Alias objects can refer to objects imported from other modules.
     # in this case, we need to import the target's module in order to resolve
-    # the alias
+    # the alias. As above, only load it if it hasn't been already: comparing the
+    # target's root package with the full module name (e.g. "pkg" vs "pkg.sub")
+    # would reparse the whole package for every alias.
     if isinstance(f_data, dc.Alias) and load_aliases:
         target_mod = f_data.target_path.split(".")[0]
-        if target_mod != module:
+        if target_mod not in loader.modules_collection:
             loader.load(target_mod)
 
     return f_data

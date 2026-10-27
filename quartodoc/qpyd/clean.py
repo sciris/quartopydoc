@@ -10,14 +10,15 @@ which files are disposable. So:
   to **nothing** — running ``qpyd clean`` in an unconfigured project is a no-op.
 * It refuses to run outside a real Quarto project (no cwd fallback).
 * It never deletes notebook/source files (``.qmd``, ``.ipynb``, ``.py``,
-  ``.md``), even if a configured pattern matches them.
+  ``.md``), even if a configured pattern matches them; a pattern that matches a
+  folder removes it only if it holds no such files.
 """
 
-import os
+import shutil
 
 import sciris as sc
 
-from .config import _excluded, load_quarto_config, project_root
+from .config import _excluded, as_list, hook_skip_reason, project_root, qpyd_config
 
 # File extensions that are (almost) always hand-authored source and must never
 # be deleted by a glob-based cleanup, regardless of configured patterns.
@@ -26,17 +27,12 @@ PROTECTED_SUFFIXES = {".qmd", ".ipynb", ".py", ".md"}
 
 def _clean_patterns():
     """Read ``qpyd.clean`` glob patterns from ``_quarto.yml`` (default: none)."""
-    data, _ = load_quarto_config()
-    qpyd_cfg = data.get("qpyd") or {}
-    patterns = qpyd_cfg.get("clean") or []
-    if isinstance(patterns, str):
-        patterns = [patterns]
-    return list(patterns)
+    return as_list(qpyd_config().get("clean"))
 
 
 def clean_outputs(patterns=None, dry_run=False):
     """
-    Delete auto-generated temporary files within the docs directory.
+    Delete auto-generated temporary files (and folders) within the docs directory.
 
     Args:
         patterns: glob patterns (relative to the docs dir) to remove. If
@@ -44,13 +40,15 @@ def clean_outputs(patterns=None, dry_run=False):
             defaults to an empty list (so cleaning is a no-op until configured).
         dry_run: if True, only print what *would* be removed.
 
-    Returns the list of matched files. Refuses to run outside a Quarto project,
+    Returns the list of matched paths. Refuses to run outside a Quarto project,
     skips build/hidden directories, and never deletes protected source files
-    (see :data:`PROTECTED_SUFFIXES`).
+    (see :data:`PROTECTED_SUFFIXES`), nor folders that contain any.
+
+    As a ``post-render`` hook, it does nothing for renders of selected pages,
+    or inside the per-notebook renders of ``qpynb run`` (see
+    :func:`.config.hook_skip_reason`).
     """
-    if os.environ.get("QPYD_SKIP_HOOKS"):
-        # We are running inside a per-notebook `quarto render` (see
-        # execute.render_notebook); skip the project post-render cleanup.
+    if hook_skip_reason():
         return []
 
     root = project_root()
@@ -69,16 +67,24 @@ def clean_outputs(patterns=None, dry_run=False):
     matched = set()
     for pattern in patterns:
         for path in root.glob(pattern):
-            if not path.is_file():
-                continue
             if _excluded(path, root):
                 continue
-            if path.suffix.lower() in PROTECTED_SUFFIXES:
+            if path.is_dir():
+                protected = [
+                    p for p in path.rglob("*") if p.suffix.lower() in PROTECTED_SUFFIXES
+                ]
+                if protected:
+                    print(f"Skipping folder with source files: {path}")
+                    continue
+            elif not path.is_file():
+                continue
+            elif path.suffix.lower() in PROTECTED_SUFFIXES:
                 print(f"Skipping protected source file: {path}")
                 continue
             matched.add(path.resolve())
 
-    files = sorted(matched)
+    # a folder's own contents needn't be listed (or removed) separately
+    files = sorted(p for p in matched if not any(d in matched for d in p.parents))
     if not files:
         print("No temporary files to clean.")
         return []
@@ -87,5 +93,8 @@ def clean_outputs(patterns=None, dry_run=False):
         verb = "Would delete" if dry_run else "Deleting"
         print(f"{verb}: {path}")
         if not dry_run:
-            sc.rmpath(path, die=False)
+            if path.is_dir():
+                shutil.rmtree(path, ignore_errors=True)
+            else:
+                sc.rmpath(path, die=False)
     return files

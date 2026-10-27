@@ -8,16 +8,17 @@ local function _debug_log(text, debug)
     end
 end
 
-local function read_inv_text(filename)
-    -- read file
-    local file = io.open(filename, "r")
+local function read_file(filename, mode)
+    local file = io.open(filename, mode or "r")
     if file == nil then
         return nil
     end
     local str = file:read("a")
     file:close()
+    return str
+end
 
-
+local function parse_inv_text(str)
     local project = str:match("# Project: (%S+)")
     local version = str:match("# Version: (%S+)")
 
@@ -57,36 +58,50 @@ local function read_inv_text(filename)
     return data
 end
 
-local function read_json(filename)
-    local file = io.open(filename, "r")
-    if file == nil then
-        return nil
+local function decode_json(str)
+    -- pandoc's native decoder is much faster than quarto.json for large inventories
+    if pandoc.json then
+        return pandoc.json.decode(str, false)
     end
-    local str = file:read("a")
-    file:close()
-
-    local decoded = quarto.json.decode(str)
-    return decoded
+    return quarto.json.decode(str)
 end
 
-local function read_inv_text_or_json(base_name)
-    local file = io.open(base_name .. ".txt", "r")
-    if file then
-        -- TODO: refactors so we don't just close the file immediately
-        io.close(file)
-        json = read_inv_text(base_name .. ".txt")
-    else
-        json = read_json(base_name .. ".json")
-    end
+-- The merged inventory, as name -> flat list of (domain, role, prefix index,
+-- uri) rows, plus the uri prefixes. Decoding every inventory (and expanding
+-- aliases) takes most of a second for large ones, so the result is cached as
+-- Lua bytecode in the project's .quarto dir, keyed by the inventory contents.
+local rows_by_name = {}
+local prefixes = {}
+local items_by_name = {} -- items materialized from rows, by name
 
-    return json
+local function items_for(name)
+    local items = items_by_name[name]
+    if items == nil then
+        items = {}
+        local rows = rows_by_name[name]
+        if rows ~= nil then
+            for i = 1, #rows, 4 do
+                items[#items + 1] = {
+                    name = name,
+                    domain = rows[i] or nil,
+                    role = rows[i + 1] or nil,
+                    uri = prefixes[rows[i + 2]] .. rows[i + 3],
+                }
+            end
+        end
+        items_by_name[name] = items
+    end
+    return items
 end
 
 -- each inventory has entries: project, version, items
 local function lookup(search_object, debug)
     local results = {}
-    for _, inv in ipairs(inventory) do
-        for _, item in ipairs(inv.items) do
+    if search_object.name == nil then
+        return nil
+    end
+    do
+        for _, item in ipairs(items_for(search_object.name)) do
             -- e.g. :external+<inv_name>:<domain>:<role>:`<name>`
             if item.inv_name and item.inv_name ~= search_object.inv_name then
                 goto continue
@@ -189,6 +204,14 @@ local function flatten_alias_list(list)
     return flat
 end
 
+local function alias_prefix(alias)
+    if not alias or pandoc.utils.stringify(alias) == "" then
+        return ""
+    end
+    -- TODO: ensure alias doesn't end with period
+    return pandoc.utils.stringify(alias) .. "."
+end
+
 local function prepend_aliases(flat_aliases)
     -- if str up to first period starts with an alias, then
     -- replace it with the full name.
@@ -203,18 +226,12 @@ local function prepend_aliases(flat_aliases)
 
     for _, name_pair in pairs(flat_aliases) do
         local full = name_pair[1]
-        local alias = name_pair[2]
+        local full_prefix = full .. "."
+        local prefix = alias_prefix(name_pair[2])
         for _, inv in ipairs(inventory) do
             for _, item in ipairs(inv.items) do
-                if string.sub(item.name, 1, string.len(full) + 1) == (full .. ".") then
+                if string.find(item.name, full_prefix, 1, true) == 1 then
                     -- replace full .. "." with alias .. "."
-                    local prefix
-                    if not alias or pandoc.utils.stringify(alias) == "" then
-                        prefix = ""
-                    else
-                        -- TODO: ensure alias doesn't end with period
-                        prefix = pandoc.utils.stringify(alias) .. "."
-                    end
                     local new_name = prefix .. string.sub(item.name, string.len(full) + 2)
                     table.insert(new_inv.items, copy_replace(item, "name", new_name))
                 end
@@ -358,10 +375,123 @@ function Code(code)
 end
 
 local function fixup_json(json, prefix, attach)
+    table.insert(prefixes, prefix)
     for _, item in ipairs(json.items) do
-        item.uri = prefix .. item.uri
+        item.prefix_index = #prefixes
     end
     table.insert(inventory, json)
+end
+
+local function quote(value)
+    if value == nil or value == false then
+        return "false"
+    elseif type(value) == "number" then
+        return tostring(value)
+    end
+    return string.format("%q", value)
+end
+
+local function write_cache(cache_dir, cache_file)
+    local out = { "return {P={" }
+    for _, prefix in ipairs(prefixes) do
+        out[#out + 1] = quote(prefix) .. ","
+    end
+    out[#out + 1] = "},I={"
+    for name, rows in pairs(rows_by_name) do
+        local parts = {}
+        for i, value in ipairs(rows) do
+            parts[i] = quote(value)
+        end
+        out[#out + 1] = "[" .. quote(name) .. "]={" .. table.concat(parts, ",") .. "},\n"
+    end
+    out[#out + 1] = "}}"
+    local fn = load(table.concat(out))
+    if fn == nil then
+        return
+    end
+
+    -- write atomically (pages render concurrently), then drop stale caches
+    pandoc.system.make_directory(cache_dir, true)
+    local tmp_file = string.format("%s.%d.%d.tmp", cache_file, os.time(), math.random(1, 1000000000))
+    local file = io.open(tmp_file, "wb")
+    if file == nil then
+        return
+    end
+    file:write(string.dump(fn, true))
+    file:close()
+    os.rename(tmp_file, cache_file)
+    for _, name in ipairs(pandoc.system.list_directory(cache_dir)) do
+        local path = cache_dir .. "/" .. name
+        if name:match("%.luac$") and path ~= cache_file then
+            os.remove(path)
+        end
+    end
+end
+
+-- sources: list of {base = path without extension, prefix = uri prefix}
+local function load_inventories(sources, flat_aliases)
+    -- read the sources (a .txt inventory wins over a .json one) and compute the cache key
+    local key_parts = { "interlinks-cache-1", _VERSION }
+    for _, src in ipairs(sources) do
+        src.txt = read_file(src.base .. ".txt")
+        if src.txt == nil then
+            src.json = read_file(src.base .. ".json")
+        end
+        key_parts[#key_parts + 1] = src.base .. "\n" .. src.prefix .. "\n" .. (src.txt or src.json or "")
+    end
+    for _, name_pair in ipairs(flat_aliases) do
+        key_parts[#key_parts + 1] = name_pair[1] .. "\n" .. alias_prefix(name_pair[2])
+    end
+
+    local cache_dir
+    local cache_file
+    if quarto.project.directory then
+        cache_dir = quarto.project.directory .. "/.quarto/interlinks"
+        cache_file = cache_dir .. "/" .. pandoc.utils.sha1(table.concat(key_parts, "\0")) .. ".luac"
+        local bytes = read_file(cache_file, "rb")
+        if bytes then
+            local fn = load(bytes, "=interlinks-cache", "b")
+            local ok, data = pcall(fn or error)
+            if ok and type(data) == "table" then
+                prefixes = data.P
+                rows_by_name = data.I
+                return
+            end
+        end
+    end
+
+    -- no (usable) cache, so parse the inventories
+    for _, src in ipairs(sources) do
+        local json
+        if src.txt then
+            json = parse_inv_text(src.txt)
+        elseif src.json then
+            json = decode_json(src.json)
+        end
+        if json ~= nil then
+            fixup_json(json, src.prefix)
+        end
+    end
+    prepend_aliases(flat_aliases)
+
+    for _, inv in ipairs(inventory) do
+        for _, item in ipairs(inv.items) do
+            local rows = rows_by_name[item.name]
+            if rows == nil then
+                rows = {}
+                rows_by_name[item.name] = rows
+            end
+            rows[#rows + 1] = item.domain or false
+            rows[#rows + 1] = item.role or false
+            rows[#rows + 1] = item.prefix_index
+            rows[#rows + 1] = item.uri
+        end
+    end
+    inventory = {}
+
+    if cache_file then
+        pcall(write_cache, cache_dir, cache_file)
+    end
 end
 
 return {
@@ -385,23 +515,28 @@ return {
                 aliases = {}
             end
 
-            -- process sources
+            -- process sources (sorted, so the order and cache key are stable)
+            local sources = {}
             if meta.interlinks and meta.interlinks.sources then
                 for k, v in pairs(meta.interlinks.sources) do
-                    local base_name = quarto.project.offset .. "/_inv/" .. k .. "_objects"
-                    json = read_inv_text_or_json(base_name)
-                    prefix = pandoc.utils.stringify(v.url)
-                    if json ~= nil then
-                        fixup_json(json, prefix)
-                    end
+                    sources[#sources + 1] = {
+                        base = quarto.project.offset .. "/_inv/" .. k .. "_objects",
+                        prefix = pandoc.utils.stringify(v.url),
+                    }
                 end
             end
-            json = read_inv_text_or_json(quarto.project.offset .. "/objects")
-            if json ~= nil then
-                fixup_json(json, "/")
-            end
+            table.sort(sources, function(a, b) return a.base < b.base end)
+            sources[#sources + 1] = { base = quarto.project.offset .. "/objects", prefix = "/" }
 
-            prepend_aliases(flatten_alias_list(aliases))
+            local flat_aliases = flatten_alias_list(aliases)
+            table.sort(flat_aliases, function(a, b)
+                if a[1] ~= b[1] then
+                    return a[1] < b[1]
+                end
+                return alias_prefix(a[2]) < alias_prefix(b[2])
+            end)
+
+            load_inventories(sources, flat_aliases)
         end
     },
     {

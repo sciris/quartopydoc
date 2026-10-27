@@ -1,3 +1,5 @@
+import yaml
+
 from quartodoc.qpyd import variables
 
 
@@ -32,3 +34,19 @@ def test_load_missing_returns_empty(tmp_path):
 def test_variable_args_roundtrip(tmp_path):
     (tmp_path / "_variables.py").write_text("name = 'starsim'\n")
     assert variables.variable_args(tmp_path / "_variables.py") == ["-M", "name:starsim"]
+
+
+def test_write_variables_yml(tmp_path):
+    (tmp_path / "_variables.py").write_text("version = '1.10'\n")
+    yml = tmp_path / "_variables.yml"
+    yml.write_text("other: kept\n")
+    assert variables.write_variables_yml(tmp_path / "_variables.py") == {"version": "1.10"}
+    assert yaml.safe_load(yml.read_text()) == {"other": "kept", "version": "1.10"}
+    mtime = yml.stat().st_mtime_ns
+    assert variables.write_variables_yml(tmp_path / "_variables.py") is None  # unchanged
+    assert yml.stat().st_mtime_ns == mtime
+
+
+def test_write_variables_yml_without_py(tmp_path):
+    assert variables.write_variables_yml(tmp_path / "_variables.py") is None
+    assert not (tmp_path / "_variables.yml").exists()

@@ -81,13 +81,14 @@ See the [API reference](api/index.qmd) to get started.
 
 _VARIABLES_PY = '''\
 """
-Optional variables made available to `quarto render` as `-M key:value` flags.
+Optional variables for the docs, e.g. {{< var version >}}.
 
-Public, YAML-serialisable, non-callable names defined here are passed through
-by `qpyd render` / `qpyd preview`. For example:
+Public, YAML-serialisable, non-callable names defined here are written to
+_variables.yml by `qpyd prerender`, and passed as `-M key:value` flags by
+`qpyd render` / `qpyd preview`. For example:
 
-    import __PACKAGE__
-    version = __PACKAGE__.__version__
+    import quartodoc as qd
+    version = qd.get_version()  # __PACKAGE__'s version, read without importing it
 """
 '''
 
