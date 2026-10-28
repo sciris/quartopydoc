@@ -19,4 +19,4 @@ run() {
 
 run git tag "$tag"
 run git push origin "$tag"
-run pypi_release
+run pypi_release # NB: this is an internal script linked to twine, you don't have it!
