@@ -370,6 +370,7 @@ def test_render_numpydoc_section_return(snapshot, doc):
         """int\n    A description.""",
         """err_code : int\n    Non-zero value indicates error code, or zero on success.\nerr_msg : str or None\n    Human readable error message, or None on success.""",
     ],
+    ids=["name-type", "type-only", "multiple"],
 )
 def test_render_numpydoc_section_yields(snapshot, doc):
     from quartodoc.parsers import get_parser_defaults

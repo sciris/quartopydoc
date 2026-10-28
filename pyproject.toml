@@ -63,7 +63,7 @@ qpynb = "quartodoc.qpyd:nb_cli"
 
 [dependency-groups]
 dev = [
-    "pytest<8.0.0",
+    "pytest>=9.0.3",
     "pytest-cov",
     "jupyterlab",
     "jupytext",

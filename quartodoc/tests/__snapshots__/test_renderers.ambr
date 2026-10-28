@@ -1091,7 +1091,7 @@
       :   A `"description"`.
   '''
 # ---
-# name: test_render_numpydoc_section_yields[err_code : int\n    Non-zero value indicates error code, or zero on success.\nerr_msg : str or None\n    Human readable error message, or None on success.]
+# name: test_render_numpydoc_section_yields[multiple]
   '''
   Code
       Parameters
@@ -1178,7 +1178,7 @@
       :   Human readable error message, or None on success.
   '''
 # ---
-# name: test_render_numpydoc_section_yields[int\n    A description.]
+# name: test_render_numpydoc_section_yields[type-only]
   '''
   Code
       Parameters
@@ -1241,7 +1241,7 @@
       :   A description.
   '''
 # ---
-# name: test_render_numpydoc_section_yields[name: int\n    A `"description"`.]
+# name: test_render_numpydoc_section_yields[name-type]
   '''
   Code
       Parameters
