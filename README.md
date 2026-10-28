@@ -1,6 +1,14 @@
-**quartopydoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org). It is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
+# QuartoPyDoc
 
-`quartopydoc` is a fork of [`quartodoc`](https://github.com/machow/quartodoc), created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what this fork adds on top, see [differences from quartodoc](#differences-from-quartodoc). For Posit’s more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/).
+QuartoPyDoc is a fork of [`quartodoc`](https://github.com/machow/quartodoc), created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what this fork adds on top, see [differences from quartodoc](#differences-from-quartodoc). For Posit’s more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/).
+
+The rest of the readme is `quartodoc`'s original.
+
+---
+
+**quartodoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org). It is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
+
+
 
 Check out the below screencast for a walkthrough of creating a documentation site, or read on for instructions.
 
