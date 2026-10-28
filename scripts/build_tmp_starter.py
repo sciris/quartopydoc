@@ -4,13 +4,13 @@ import subprocess
 from pathlib import Path
 from quartodoc.__main__ import build
 
-p = Path("docs/get-started/overview.qmd")
+p = Path("README.md")
 overview = p.read_text()
 
 indx = overview.index("<!-- Starter Template -->")
 yml_blurb = overview[indx:]
 
-match = re.search(r"```yaml\s*(.*?)```", yml_blurb, re.DOTALL)
+match = re.search(r"```\s*yaml\s*(.*?)```", yml_blurb, re.DOTALL)
 if match is None:
     raise Exception()
 
