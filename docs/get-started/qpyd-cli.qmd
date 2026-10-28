@@ -198,9 +198,10 @@ qpynb clear --dry-run
 
 ## `_variables.py`
 
-You can place an optional `_variables.py` file alongside `_quarto.yml`. Its
-public, non-callable, YAML-serializable values are passed to `quarto render` as
-`-M key:value` metadata by `qpyd render` and `qpyd preview`:
+You can place an optional `_variables.py` file alongside `_quarto.yml`.
+`qpyd prerender` writes its values to `_variables.yml` (keeping any other keys
+there), so the [`var` shortcode](https://quarto.org/docs/authoring/variables.html#var)
+can use them however the site is rendered:
 
 ```python
 # _variables.py
@@ -223,21 +224,34 @@ renders fast even for packages that are slow to import:
   and `__init__.py`. A dotted name says which module to read, e.g.
   `qd.get_attr("pkg.meta.__citation__")`.
 
-Values are YAML-encoded, so version strings survive intact (e.g. `"1.10"` is
-passed as the string `'1.10'`, not coerced to the number `1.1`). Reference them
-in documents with the [`meta` shortcode](https://quarto.org/docs/authoring/variables.html#meta):
+Reference them in documents with:
 
 ```markdown
-Docs for version {{{< meta version >}}} ({{{< meta versiondate >}}}).
+Docs for version {{{< var version >}}} ({{{< var versiondate >}}}).
 ```
 
-`qpyd prerender` also writes them to `_variables.yml` (keeping any other keys
-there), so the [`var` shortcode](https://quarto.org/docs/authoring/variables.html#var)
-works too, including when the site is rendered with a plain `quarto render`:
+If `_variables.py` defines `__all__`, exactly those names are exported.
+Otherwise every name is, except private ones (starting with `_`), modules, and
+callables (functions and classes). A value that can't be written to YAML, such
+as a NumPy number, is skipped with a warning, so convert it to
+a string or number first.
 
-```markdown
-Docs for version {{{< var version >}}}.
+For the common case, you don't need `_variables.py` at all: declare the
+variables in the `qpyd.variables` section of `_quarto.yml` instead. A value of
+the form `{attr: NAME}` is read from the package's source, just like
+`qd.get_attr()` (and `{attr: __version__}` like `qd.get_version()`); any other
+value is used as is:
+
+```yaml
+qpyd:
+  variables:
+    version: {attr: __version__}
+    versiondate: {attr: __versiondate__}
+    sciris_version: {attr: sciris.__version__}  # a dotted name reads another package
+    license: MIT
 ```
+
+If a name is in both, `_variables.py` wins.
 
 Since `_variables.py` runs on every render, keep it quick: prefer `qd.get_version()`
 and `qd.get_attr()` to importing a large package.
@@ -262,6 +276,8 @@ qpyd:
     outputs: [index.json]      # extra files it creates
   clean:                       # optional glob patterns for `qpyd clean`
     - '**/my-*.png'            # source files are never deleted, even if matched
+  variables:                   # optional docs variables (see above)
+    version: {attr: __version__}
 
 execute:
   freeze: auto                 # let `qpynb run` pre-bake the freeze cache

@@ -54,16 +54,28 @@ renders stay fast.
 
 ## `_variables.py`
 
-An optional file alongside `_quarto.yml`. Public, non-callable,
-YAML-serializable names defined in it are passed to `quarto render` as
-`-M key:value` metadata (YAML-encoded, so strings like `"1.10"` stay strings),
-and `qpyd prerender` writes them to `_variables.yml`, so `{{< var version >}}`
-works however the site is rendered:
+An optional file alongside `_quarto.yml`. `qpyd prerender` writes the names
+defined in it to `_variables.yml`, so `{{< var version >}}` works however the
+site is rendered. If the file defines `__all__`, exactly those names are
+written; otherwise every name is, except private (`_name`) ones, modules and
+callables:
 
 ```python
 import quartodoc as qd
 version = qd.get_version()                    # read without importing the package
 versiondate = qd.get_attr("__versiondate__")  # any literal module-level constant
+```
+
+For the common case, the variables can be declared in `_quarto.yml` instead,
+with no `_variables.py`. `{attr: NAME}` reads a constant from the package's
+source (a dotted name reads another package or module); any other value is used
+as is:
+
+```yaml
+qpyd:
+  variables:
+    version: {attr: __version__}
+    versiondate: {attr: __versiondate__}
 ```
 
 ## Relevant `_quarto.yml` keys
@@ -81,6 +93,8 @@ qpyd:
     outputs: [index.json]     # extra files it creates
   clean:                      # optional glob patterns for `qpyd clean`
     - '**/my-*.png'           # source files (.qmd/.ipynb/.py/.md) are never deleted
+  variables:                  # optional docs variables, for {{< var version >}}
+    version: {attr: __version__}  # read from the package's source
 execute:
   freeze: auto
 ```

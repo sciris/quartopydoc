@@ -83,9 +83,8 @@ _VARIABLES_PY = '''\
 """
 Optional variables for the docs, e.g. {{< var version >}}.
 
-Public, YAML-serialisable, non-callable names defined here are written to
-_variables.yml by `qpyd prerender`, and passed as `-M key:value` flags by
-`qpyd render` / `qpyd preview`. For example:
+Public names defined here (or those in __all__, if it is defined) are written
+to _variables.yml by `qpyd prerender`. For example:
 
     import quartodoc as qd
     version = qd.get_version()  # __PACKAGE__'s version, read without importing it

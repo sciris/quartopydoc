@@ -129,21 +129,6 @@ def test_prerender_skips_under_hook_guard(monkeypatch, capsys):
     assert "Starting Quarto docs build" not in capsys.readouterr().out
 
 
-# --- variables -M serialization (MED) ---------------------------------------
-
-
-def test_variables_to_args_yaml_scalars():
-    args = variables.variables_to_args(
-        {"v": "1.2.3", "flag": True, "missing": None, "n": 5, "items": [1, 2]}
-    )
-    flat = dict(zip(args[::2], args[1::2])) if False else args
-    assert "v:1.2.3" in args
-    assert "flag:true" in args  # not Python "True"
-    assert "missing:null" in args  # not "None"
-    assert "n:5" in args
-    assert "items:[1, 2]" in args
-
-
 # --- conversion overwrite guard (MED) ---------------------------------------
 
 

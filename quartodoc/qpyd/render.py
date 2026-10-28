@@ -2,16 +2,13 @@
 Wrappers around ``quarto render`` / ``quarto preview`` / ``quarto publish``.
 
 Each of these optionally runs the pre-render build steps first (see
-:mod:`.prerender`) and appends any ``_variables.py`` values as ``-M`` metadata
-flags (see :mod:`.variables`).
+:mod:`.prerender`).
 """
 
 import subprocess
 import time
 
 import sciris as sc
-
-from .variables import variable_args
 
 
 def run(cmd, **kwargs):
@@ -55,7 +52,7 @@ def render(extra_args=(), do_prerender=True):
     """
     t0 = time.time()
     _maybe_prerender(do_prerender)
-    run(["quarto", "render", *extra_args, *variable_args()])
+    run(["quarto", "render", *extra_args])
     elapsed = time.time() - t0
     print(f"\nDone: docs built in {elapsed:0.1f} s")
 
@@ -69,7 +66,7 @@ def preview(extra_args=(), do_prerender=True):
         do_prerender: run :func:`.prerender.prerender` first (default True).
     """
     _maybe_prerender(do_prerender)
-    run(["quarto", "preview", *extra_args, *variable_args()])
+    run(["quarto", "preview", *extra_args])
 
 
 def gh_publish(do_prerender=True):
@@ -81,5 +78,5 @@ def gh_publish(do_prerender=True):
     pushes to a remote branch, so it is intentionally never run automatically.
     """
     _maybe_prerender(do_prerender)
-    run(["quarto", "render", "--cache-refresh", *variable_args()])
+    run(["quarto", "render", "--cache-refresh"])
     run(["quarto", "publish", "gh-pages", "--no-render", "--no-prompt", "--no-browser"])
