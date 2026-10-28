@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -76,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-32aa016638ae970660b03220f1a38438.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a14d652b86e00f03abd5043129e363d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -441,11 +444,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><code>quartodoc build</code> — generate the API reference pages.</li>
 <li>Customize aliases — add short cross-reference aliases (e.g.&nbsp;<code>pkg.Thing</code> for <code>pkg.submodule.Thing</code>) to <code>objects.json</code>.</li>
-<li><code>quartodoc interlinks</code> — build interlink inventories.</li>
+<li><code>quartodoc interlinks</code> — build interlink inventories (only if <code>interlinks.sources</code> lists other sites’ docs).</li>
 <li>Build a Sphinx-compatible <code>objects.inv</code> so other projects can resolve your references via intersphinx.</li>
+<li>Run any project-specific commands listed in <code>qpyd.prerender.commands</code>.</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qpyd</span> prerender</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The documented package name is read from the <code>quartodoc.package</code> key in your <code>_quarto.yml</code>. This is the command you typically wire into your project’s <code>pre-render</code> hook (see <a href="#configuring-_quartoyml">below</a>).</p>
+<p>Before these, it writes the values from <a href="#_variables.py"><code>_variables.py</code></a> to <code>_variables.yml</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qpyd</span> prerender          <span class="co"># skips the build if nothing it depends on changed</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qpyd</span> prerender <span class="at">--force</span>  <span class="co"># rebuild anyway (or set QPYD_FORCE_PRERENDER=1)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The build only depends on the documented package’s source, quartodoc itself, <code>_quarto.yml</code>, and any <code>qpyd.prerender.inputs</code>, so it is skipped when none of these changed since the last build and its outputs (<code>objects.json</code>, <code>objects.inv</code>, the API pages, and any <code>qpyd.prerender.outputs</code>) are all there. The hash of the inputs is kept in <code>.quarto/qpyd-prerender.json</code>.</p>
+<p>The documented package name is read from the <code>quartodoc.package</code> key in your <code>_quarto.yml</code>. This is the command you typically wire into your project’s <code>pre-render</code> hook (see <a href="#configuring-_quartoyml">below</a>). As a hook, it does nothing when Quarto is rendering only some pages (e.g.&nbsp;<code>quarto render page.qmd</code>), so those renders stay fast.</p>
 </section>
 <section id="qpyd-render" class="level3">
 <h3 class="anchored" data-anchor-id="qpyd-render"><code>qpyd render</code></h3>
@@ -485,7 +492,7 @@ Warning
 </section>
 <section id="qpyd-clean" class="level3">
 <h3 class="anchored" data-anchor-id="qpyd-clean"><code>qpyd clean</code></h3>
-<p>Deletes auto-generated scratch files after a build. This is <strong>opt-in</strong>: it only removes files matching the <code>qpyd.clean</code> glob patterns in your <code>_quarto.yml</code>, and it never deletes source files (<code>.qmd</code>, <code>.ipynb</code>, <code>.py</code>, <code>.md</code>).</p>
+<p>Deletes auto-generated scratch files after a build. This is <strong>opt-in</strong>: it only removes files (and folders) matching the <code>qpyd.clean</code> glob patterns in your <code>_quarto.yml</code>, and it never deletes source files (<code>.qmd</code>, <code>.ipynb</code>, <code>.py</code>, <code>.md</code>), or folders that contain any. Like <code>qpyd prerender</code>, it does nothing as a <code>post-render</code> hook for renders of only some pages.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qpyd</span> clean            <span class="co"># delete configured scratch files</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qpyd</span> clean <span class="at">--dry-run</span>  <span class="co"># show what would be deleted</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
@@ -502,7 +509,7 @@ Warning
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">qpynb</span> check <span class="at">--serial</span> <span class="co"># one at a time (useful for debugging)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><strong><code>run</code></strong> renders each notebook with <code>quarto render</code>, which executes it <em>and</em> refreshes Quarto’s freeze cache (<code>_freeze/</code>). Use it to pre-bake the cache in parallel so a subsequent full-site render is fast.</li>
-<li><strong><code>check</code></strong> is a pure validation pass — it executes each notebook to confirm it runs without error, but writes no cache and leaves nothing behind. This is ideal for CI.</li>
+<li><strong><code>check</code></strong> is a pure validation pass — it executes each notebook to confirm it runs without error, but writes no cache and leaves nothing behind. This is ideal for CI. It runs what the rendered page would: cells with <code>eval: false</code> are skipped, and errors in cells with <code>error: true</code> are allowed (both as <code>#|</code> cell options or in the page’s <code>execute</code> options).</li>
 </ul>
 <p>During <code>run</code>, each per-notebook render sets <code>QPYD_SKIP_HOOKS=1</code>, so a project <code>pre-render: qpyd prerender</code> hook becomes a no-op rather than rebuilding the whole API reference (and racing on <code>objects.json</code>) once per notebook.</p>
 </section>
@@ -528,30 +535,53 @@ Warning
 </section>
 <section id="variables.py" class="level2">
 <h2 class="anchored" data-anchor-id="variables.py"><code>_variables.py</code></h2>
-<p>You can place an optional <code>_variables.py</code> file alongside <code>_quarto.yml</code>. Its public, non-callable, YAML-serializable values are passed to <code>quarto render</code> as <code>-M key:value</code> metadata by <code>qpyd render</code> and <code>qpyd preview</code>:</p>
+<p>You can place an optional <code>_variables.py</code> file alongside <code>_quarto.yml</code>. <code>qpyd prerender</code> writes its values to <code>_variables.yml</code> (keeping any other keys there), so the <a href="https://quarto.org/docs/authoring/variables.html#var"><code>var</code> shortcode</a> can use them however the site is rendered:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># _variables.py</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> your_package</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> your_package.__version__</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>versiondate <span class="op">=</span> your_package.__versiondate__</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Values are YAML-encoded, so version strings survive intact (e.g.&nbsp;<code>"1.10"</code> is passed as the string <code>'1.10'</code>, not coerced to the number <code>1.1</code>). Reference them in documents with the <a href="https://quarto.org/docs/authoring/variables.html#meta"><code>meta</code> shortcode</a>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Docs for version {{&lt; meta version &gt;}} ({{&lt; meta versiondate &gt;}}).</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> quartodoc <span class="im">as</span> qd</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> qd.get_version()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>versiondate <span class="op">=</span> qd.get_attr(<span class="st">"__versiondate__"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>qd.get_version()</code> and <code>qd.get_attr()</code> read the documented package (the <code>quartodoc.package</code> key) from its source, without importing it, which keeps renders fast even for packages that are slow to import:</p>
+<ul>
+<li><code>get_version(package=None)</code> returns the package’s <code>__version__</code> if its source defines one as a literal, and otherwise the installed version (e.g.&nbsp;for versions from git tags).</li>
+<li><code>get_attr(name, package=None, default=...)</code> returns any module-level constant that is assigned a literal value (a string, number, list, dict, …), looking in the package’s <code>version.py</code>, <code>_version.py</code>, <code>__version__.py</code>, <code>__about__.py</code> and <code>__init__.py</code>. A dotted name says which module to read, e.g. <code>qd.get_attr("pkg.meta.__citation__")</code>.</li>
+</ul>
+<p>Reference them in documents with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Docs for version {{&lt; var version &gt;}} ({{&lt; var versiondate &gt;}}).</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If <code>_variables.py</code> defines <code>__all__</code>, exactly those names are exported. Otherwise every name is, except private ones (starting with <code>_</code>), modules, and callables (functions and classes). A value that can’t be written to YAML, such as a NumPy number, is skipped with a warning, so convert it to a string or number first.</p>
+<p>For the common case, you don’t need <code>_variables.py</code> at all: declare the variables in the <code>qpyd.variables</code> section of <code>_quarto.yml</code> instead. A value of the form <code>{attr: NAME}</code> is read from the package’s source, just like <code>qd.get_attr()</code> (and <code>{attr: __version__}</code> like <code>qd.get_version()</code>); any other value is used as is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qpyd</span><span class="kw">:</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">variables</span><span class="kw">:</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">attr</span><span class="kw">:</span><span class="at"> __version__</span><span class="kw">}</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">versiondate</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">attr</span><span class="kw">:</span><span class="at"> __versiondate__</span><span class="kw">}</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">sciris_version</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">attr</span><span class="kw">:</span><span class="at"> sciris.__version__</span><span class="kw">}</span><span class="co">  # a dotted name reads another package</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">license</span><span class="kw">:</span><span class="at"> MIT</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If a name is in both, <code>_variables.py</code> wins.</p>
+<p>Since <code>_variables.py</code> runs on every render, keep it quick: prefer <code>qd.get_version()</code> and <code>qd.get_attr()</code> to importing a large package.</p>
 </section>
 <section id="configuring-_quarto.yml" class="level2">
 <h2 class="anchored" data-anchor-id="configuring-_quarto.yml">Configuring <code>_quarto.yml</code></h2>
 <p>The keys <code>qpyd</code> reads or writes:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pre-render</span><span class="kw">:</span><span class="at"> qpyd prerender</span><span class="co">   # build API docs etc. before each render</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">  # post-render: qpyd clean    # optional; opt-in scratch cleanup</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">quartodoc</span><span class="kw">:</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">package</span><span class="kw">:</span><span class="at"> your_package</span><span class="co">        # used by prerender for aliases / objects.inv</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">qpyd</span><span class="kw">:</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">clean</span><span class="kw">:</span><span class="co">                       # optional glob patterns for `qpyd clean`</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="st">'**/my-*.png'</span><span class="co">            # source files are never deleted, even if matched</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">freeze</span><span class="kw">:</span><span class="at"> auto</span><span class="co">                 # let `qpynb run` pre-bake the freeze cache</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pre-render</span><span class="kw">:</span><span class="at"> qpyd prerender</span><span class="co">   # build API docs etc. before each render</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">  # post-render: qpyd clean    # optional; opt-in scratch cleanup</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">quartodoc</span><span class="kw">:</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">package</span><span class="kw">:</span><span class="at"> your_package</span><span class="co">        # used by prerender for aliases / objects.inv</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">qpyd</span><span class="kw">:</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">prerender</span><span class="kw">:</span><span class="co">                   # optional project-specific pre-render steps</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">commands</span><span class="kw">:</span><span class="co">                  # run after the standard steps, in the docs folder</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> python make_index.py</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">inputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">make_index.py</span><span class="kw">]</span><span class="co">    # extra files the build depends on (globs allowed)</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">index.json</span><span class="kw">]</span><span class="co">      # extra files it creates</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">clean</span><span class="kw">:</span><span class="co">                       # optional glob patterns for `qpyd clean`</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="st">'**/my-*.png'</span><span class="co">            # source files are never deleted, even if matched</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">variables</span><span class="kw">:</span><span class="co">                   # optional docs variables (see above)</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">attr</span><span class="kw">:</span><span class="at"> __version__</span><span class="kw">}</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">freeze</span><span class="kw">:</span><span class="at"> auto</span><span class="co">                 # let `qpynb run` pre-bake the freeze cache</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>

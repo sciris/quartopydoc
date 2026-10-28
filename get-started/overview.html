@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -75,10 +78,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-32aa016638ae970660b03220f1a38438.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a14d652b86e00f03abd5043129e363d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -348,12 +351,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#quartopydoc" id="toc-quartopydoc" class="nav-link active" data-scroll-target="#quartopydoc">QuartoPyDoc</a>
+  <ul class="collapse">
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
   <li><a href="#basic-use" id="toc-basic-use" class="nav-link" data-scroll-target="#basic-use">Basic use</a></li>
   <li><a href="#rebuilding-site" id="toc-rebuilding-site" class="nav-link" data-scroll-target="#rebuilding-site">Rebuilding site</a></li>
   <li><a href="#looking-up-objects" id="toc-looking-up-objects" class="nav-link" data-scroll-target="#looking-up-objects">Looking up objects</a></li>
   <li><a href="#differences-from-quartodoc" id="toc-differences-from-quartodoc" class="nav-link" data-scroll-target="#differences-from-quartodoc">Differences from quartodoc</a></li>
   <li><a href="#learning-more" id="toc-learning-more" class="nav-link" data-scroll-target="#learning-more">Learning more</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -380,8 +386,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <!-- The repo README is the single source of this page's content; edit /README.md. -->
-<p><strong>quartopydoc</strong> lets you quickly generate Python package API reference documentation using Markdown and <a href="https://quarto.org">Quarto</a>. It is designed as an alternative to <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.</p>
-<p><code>quartopydoc</code> is a fork of <a href="https://github.com/machow/quartodoc"><code>quartodoc</code></a>, created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import <code>quartodoc</code>, still run <code>quartodoc build</code>, and still configure a <code>quartodoc:</code> section in your <code>_quarto.yml</code>. For what this fork adds on top, see <a href="#differences-from-quartodoc">differences from quartodoc</a>. For Posit’s more modern document generation package that is a successor to <code>quartodoc</code>, see <a href="https://posit-dev.github.io/great-docs/">Great Docs</a>.</p>
+<section id="quartopydoc" class="level1">
+<h1>QuartoPyDoc</h1>
+<p>QuartoPyDoc is a fork of <a href="https://github.com/machow/quartodoc"><code>quartodoc</code></a>, created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import <code>quartodoc</code>, still run <code>quartodoc build</code>, and still configure a <code>quartodoc:</code> section in your <code>_quarto.yml</code>. For what this fork adds on top, see <a href="#differences-from-quartodoc">differences from quartodoc</a>.</p>
+<p>This fork is <strong>not</strong> intended for widespread use and should be considered alpha at best; it may change arbitrarily and is unlikely to be maintained long term. For Posit’s more modern document generation package that is a successor to <code>quartodoc</code>, see <a href="https://posit-dev.github.io/great-docs/">Great Docs</a>. Eventually, anything of value from QuartoPyDoc will likely be merged into Great Docs.</p>
+<p>The rest of this readme is <code>quartodoc</code>’s original (except for the install instructions).</p>
+<hr>
+<p><strong>quartodoc</strong> lets you quickly generate Python package API reference documentation using Markdown and <a href="https://quarto.org">Quarto</a>. It is designed as an alternative to <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.</p>
 <p>Check out the below screencast for a walkthrough of creating a documentation site, or read on for instructions.</p>
 <p align="center">
 <a href="https://www.loom.com/share/fb4eb736848e470b8409ba46b514e2ed"> <img src="https://cdn.loom.com/sessions/thumbnails/fb4eb736848e470b8409ba46b514e2ed-00001.gif" width="75%"> </a>
@@ -479,6 +490,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>The <code>qpyd</code> and <code>qpynb</code> commands.</strong> Where <code>quartodoc build</code> generates your API reference pages, <code>qpyd</code> wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and <code>qpynb</code> runs, checks, converts, and cleans notebooks in parallel. See <a href="https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html">the qpyd CLI</a>.</p>
 <p><strong><code>contents: auto</code>.</strong> Document every public submodule of a package without listing them out, as shown <a href="#looking-up-objects">above</a>. Private modules and test modules are skipped.</p>
 <p><strong>griffe 2.x.</strong> quartopydoc requires griffe 2.0 or later, and tracks its current API.</p>
+<p><strong><code>qd.get_version()</code> and <code>qd.get_attr()</code>.</strong> Read the documented package’s version, or any other literal module-level constant (e.g.&nbsp;<code>__versiondate__</code>), from its source without importing it, for use in <code>_variables.py</code>. <code>import quartodoc</code> itself is also fast now, since the rest of the API is imported on first use.</p>
+<p><strong>A faster interlinks filter.</strong> The <code>interlinks</code> Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project’s <code>.quarto/interlinks</code> folder) instead of decoding them on every page. With large inventories (e.g.&nbsp;Python, NumPy and pandas), this saves a second or more per rendered page.</p>
 <p>Note: installing both <code>quartopydoc</code> and <code>quartodoc</code> into the same environment will conflict, since both provide the <code>quartodoc</code> package and the <code>quartodoc</code> command. All <code>quartodoc</code> functionality is available from <code>quartopydoc</code>.</p>
 </section>
 <section id="learning-more" class="level2">
@@ -493,6 +506,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

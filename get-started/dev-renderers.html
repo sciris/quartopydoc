@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -76,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-32aa016638ae970660b03220f1a38438.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a14d652b86e00f03abd5043129e363d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -395,7 +398,7 @@ SECTIONS: A docstring with 4 pieces</code></pre>
 <section id="inspecting-a-function" class="level2">
 <h2 class="anchored" data-anchor-id="inspecting-a-function">Inspecting a function</h2>
 <p>As covered in the previous section, we can preview information about <a href="../api/get_object.html#quartodoc.get_object" title="0"><code>get_object()</code></a>.</p>
-<div id="b64ca67c" class="cell" data-execution_count="1">
+<div id="d5b8b1cc" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quartodoc <span class="im">import</span> get_object, preview</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>f_obj <span class="op">=</span> get_object(<span class="st">"quartodoc"</span>, <span class="st">"get_object"</span>)</span>
@@ -457,7 +460,7 @@ SECTIONS: A docstring with 4 pieces</code></pre>
 <section id="generic-dispatch" class="level2">
 <h2 class="anchored" data-anchor-id="generic-dispatch">Generic dispatch</h2>
 <p>Generic dispatch is the main programming technique used by quartodoc renderers. It let’s you define how a function (like <code>render()</code>) should operate on different types of objects.</p>
-<div id="9d4aadda" class="cell" data-execution_count="2">
+<div id="79d41d1b" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plum <span class="im">import</span> dispatch</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> griffe <span class="im">import</span> Alias, Object, Docstring</span>
@@ -490,7 +493,7 @@ Default rendering: &lt;class 'griffe._internal.models.Parameters'&gt;</code></pr
 <section id="defining-a-renderer" class="level2">
 <h2 class="anchored" data-anchor-id="defining-a-renderer">Defining a Renderer</h2>
 <p>quartodoc uses tree visitors to render parsed docstrings to formats like markdown and HTML. Tree visitors define how each type of object in the parse tree should be handled.</p>
-<div id="89546679" class="cell" data-execution_count="3">
+<div id="e68997bc" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> griffe <span class="im">import</span> Alias, Object, Docstring</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quartodoc <span class="im">import</span> get_object</span>
@@ -533,7 +536,7 @@ SECTIONS: A docstring with 5 pieces</code></pre>
 <p>Note 3 big pieces:</p>
 <ul>
 <li><strong>Generic dispatch</strong>: The plum <code>dispatch</code> function decorates each <code>render</code> method. The type annotations specify the types of data each version of render should dispatch on.</li>
-<li><strong>Default behavior</strong>: The first <code>render</code> method ensures a <a href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="1"><code>NotImplementedError</code></a> is raised by default.</li>
+<li><strong>Default behavior</strong>: The first <code>render</code> method ensures a <a href="https://docs.python.org/3/builtins/exceptions.html#NotImplementedError" title="1"><code>NotImplementedError</code></a> is raised by default.</li>
 <li><strong>Tree walking</strong>: <code>render</code> methods often call <code>render</code> again on sub elements.</li>
 </ul>
 </section>
@@ -544,7 +547,7 @@ SECTIONS: A docstring with 5 pieces</code></pre>
 <li>Subclass an existing renderer.</li>
 <li>Also override other methods like <code>.summarize()</code></li>
 </ul>
-<div id="d2c3f0e9" class="cell" data-execution_count="4">
+<div id="71afb660" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quartodoc <span class="im">import</span> MdRenderer</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> NewRenderer(MdRenderer):</span>

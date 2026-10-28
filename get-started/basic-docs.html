@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -76,10 +79,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-32aa016638ae970660b03220f1a38438.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a14d652b86e00f03abd5043129e363d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -415,13 +418,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>sections</td>
 <td>'list[Any]'</td>
 <td>A list of sections, with items to document.</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="1"><code>tuple()</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="1"><code>tuple()</code></a></td>
 </tr>
 <tr class="odd">
 <td>version</td>
 <td>'str | None'</td>
 <td>The package version. By default this attempts to look up the current package version (TODO).</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="even">
 <td>dir</td>
@@ -445,49 +448,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>options</td>
 <td>'dict | None'</td>
 <td>Default options to set for all pieces of content (e.g.&nbsp;include_attributes).</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="even">
 <td>out_index</td>
 <td>str</td>
 <td>The output path of the index file, used to list all API functions.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="odd">
 <td>sidebar</td>
 <td>'str | dict[str, Any] | None'</td>
 <td>The output path for a sidebar yaml config (by default no config generated). Alternatively, can be a dictionary of <a href="https://quarto.org/docs/websites/website-navigation.html#side-navigation">Quarto sidebar options</a> with an additional <code>file</code> key containing the output path for the sidebar YAML config file (by default <code>_quartodoc-sidebar.yml</code> if not specified).</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="even">
 <td>css</td>
 <td>'str | None'</td>
 <td>The output path for the default css styles.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="odd">
 <td>rewrite_all_pages</td>
 <td></td>
 <td>Whether to rewrite all rendered doc pages, or only those with changes.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#False" title="1"><code>False</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#False" title="1"><code>False</code></a></td>
 </tr>
 <tr class="even">
 <td>source_dir</td>
 <td>'str | None'</td>
 <td>A directory where source files to be documented live. This is only necessary if you are not documenting a package, but collection of scripts. Use a “.” to refer to the current directory.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="odd">
 <td>dynamic</td>
 <td>bool | None</td>
 <td>Whether to dynamically load all python objects. By default, objects are loaded using static analysis.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 <tr class="even">
 <td>render_interlinks</td>
 <td>bool</td>
 <td>Whether to render interlinks syntax inside documented objects. Note that the interlinks filter is required to generate the links in quarto.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#False" title="1"><code>False</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#False" title="1"><code>False</code></a></td>
 </tr>
 <tr class="odd">
 <td>parser</td>
@@ -499,7 +502,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>index_topmatter</td>
 <td>dict</td>
 <td>Custom YAML frontmatter for the API index page. When provided, this completely overrides the <code>title</code> configuration. Set to an empty dict to generate an empty frontmatter block. Default is None, which falls back to using the <code>title</code> parameter.</td>
-<td><a href="https://docs.python.org/3/library/constants.html#None" title="1"><code>None</code></a></td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
 </tbody>
 </table>
