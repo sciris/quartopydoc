@@ -1,0 +1,22 @@
+#!/bin/bash
+# Tag, push the tag, and release to PyPI, confirming each step.
+# Usage: pypi_publish v0.13.0
+
+if [ $# -ne 1 ]; then
+    echo "Usage: pypi_publish <tag>, e.g. pypi_publish v0.13.0"
+    exit 1
+fi
+tag=$1
+
+run() {
+    read -p "Run '$*'? [y/N] " ans
+    if [ "$ans" != "y" ]; then
+        echo "Stopped."
+        exit 1
+    fi
+    "$@" || exit $?
+}
+
+run git tag "$tag"
+run git push origin "$tag"
+run pypi_release
