@@ -2,9 +2,44 @@ QuartoPyDoc is a fork of [`quartodoc`](https://github.com/machow/quartodoc), cre
 
 This fork is **not** intended for widespread use and should be considered alpha at best; it may change arbitrarily and is unlikely to be maintained long term. For Posit’s more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/). Eventually, anything of value from QuartoPyDoc will likely be merged into Great Docs.
 
-The rest of this readme is `quartodoc`'s original (except for the install instructions).
+
+## Installation
+
+``` bash
+python -m pip install quartopydoc
+```
+
+or from GitHub:
+
+``` bash
+python -m pip install git+https://github.com/sciris/quartopydoc.git
+```
+
+Note that the package is installed as `quartopydoc`, but imported as `quartodoc`.
+
+> **Important:** if you haven't already, you'll need to install Quarto. We recommend the [Sciris fork](https://github.com/sciris/quarto-cli), which has improvements including parallel processing and skipping broken notebooks.
+
+
+## Differences from quartodoc
+
+Everything documented for quartodoc still applies. On top of it, quartopydoc adds:
+
+**The `qpyd` and `qpynb` commands.** Where `quartodoc build` generates your API reference pages, `qpyd` wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and `qpynb` runs, checks, converts, and cleans notebooks in parallel. See [the qpyd CLI](https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html).
+
+**`contents: auto`.** Document every public submodule of a package without listing them out, as shown [above](#looking-up-objects). Private modules and test modules are skipped.
+
+**griffe 2.x.** quartopydoc requires griffe 2.0 or later, and tracks its current API.
+
+**`qd.get_version()` and `qd.get_attr()`.** Read the documented package's version, or any other literal module-level constant (e.g. `__versiondate__`), from its source without importing it, for use in `_variables.py`. `import quartodoc` itself is also fast now, since the rest of the API is imported on first use.
+
+**A faster interlinks filter.** The `interlinks` Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project's `.quarto/interlinks` folder) instead of decoding them on every page. With large inventories (e.g. Python, NumPy and pandas), this saves a second or more per rendered page.
+
+Note: installing both `quartopydoc` and `quartodoc` into the same environment will conflict, since both provide the `quartodoc` package and the `quartodoc` command. All `quartodoc` functionality is available from `quartopydoc`.
 
 ---
+
+The rest of this readme is `quartodoc`'s original (except for the install instructions).
+
 
 **quartodoc** lets you quickly generate Python package API reference documentation using Markdown and [Quarto](https://quarto.org). It is designed as an alternative to [Sphinx](https://www.sphinx-doc.org/en/master/).
 
@@ -19,21 +54,6 @@ Check out the below screencast for a walkthrough of creating a documentation sit
 
 <br>
 
-## Installation
-
-``` bash
-python -m pip install quartopydoc
-```
-
-or from GitHub
-
-``` bash
-python -m pip install git+https://github.com/sciris/quartopydoc.git
-```
-
-Note that the package is installed as `quartopydoc`, but imported as `quartodoc`.
-
-> **Important:** if you haven’t already, you’ll need to [install Quarto](https://quarto.org/docs/get-started/) before you can use quartodoc.
 
 ## Basic use
 
@@ -141,21 +161,6 @@ quartodoc:
       contents: auto
 ```
 
-## Differences from quartodoc
-
-Everything documented for quartodoc still applies. On top of it, quartopydoc adds:
-
-**The `qpyd` and `qpynb` commands.** Where `quartodoc build` generates your API reference pages, `qpyd` wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and `qpynb` runs, checks, converts, and cleans notebooks in parallel. See [the qpyd CLI](https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html).
-
-**`contents: auto`.** Document every public submodule of a package without listing them out, as shown [above](#looking-up-objects). Private modules and test modules are skipped.
-
-**griffe 2.x.** quartopydoc requires griffe 2.0 or later, and tracks its current API.
-
-**`qd.get_version()` and `qd.get_attr()`.** Read the documented package's version, or any other literal module-level constant (e.g. `__versiondate__`), from its source without importing it, for use in `_variables.py`. `import quartodoc` itself is also fast now, since the rest of the API is imported on first use.
-
-**A faster interlinks filter.** The `interlinks` Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project's `.quarto/interlinks` folder) instead of decoding them on every page. With large inventories (e.g. Python, NumPy and pandas), this saves a second or more per rendered page.
-
-Note: installing both `quartopydoc` and `quartodoc` into the same environment will conflict, since both provide the `quartodoc` package and the `quartodoc` command. All `quartodoc` functionality is available from `quartopydoc`.
 
 ## Learning more
 
