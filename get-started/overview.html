@@ -352,10 +352,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#differences-from-quartodoc" id="toc-differences-from-quartodoc" class="nav-link" data-scroll-target="#differences-from-quartodoc">Differences from quartodoc</a></li>
   <li><a href="#basic-use" id="toc-basic-use" class="nav-link" data-scroll-target="#basic-use">Basic use</a></li>
   <li><a href="#rebuilding-site" id="toc-rebuilding-site" class="nav-link" data-scroll-target="#rebuilding-site">Rebuilding site</a></li>
   <li><a href="#looking-up-objects" id="toc-looking-up-objects" class="nav-link" data-scroll-target="#looking-up-objects">Looking up objects</a></li>
-  <li><a href="#differences-from-quartodoc" id="toc-differences-from-quartodoc" class="nav-link" data-scroll-target="#differences-from-quartodoc">Differences from quartodoc</a></li>
   <li><a href="#learning-more" id="toc-learning-more" class="nav-link" data-scroll-target="#learning-more">Learning more</a></li>
   </ul>
 </nav>
@@ -385,23 +385,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- The repo README is the single source of this page's content; edit /README.md. -->
 <p>QuartoPyDoc is a fork of <a href="https://github.com/machow/quartodoc"><code>quartodoc</code></a>, created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import <code>quartodoc</code>, still run <code>quartodoc build</code>, and still configure a <code>quartodoc:</code> section in your <code>_quarto.yml</code>. For what this fork adds on top, see <a href="#differences-from-quartodoc">differences from quartodoc</a>.</p>
 <p>This fork is <strong>not</strong> intended for widespread use and should be considered alpha at best; it may change arbitrarily and is unlikely to be maintained long term. For Posit’s more modern document generation package that is a successor to <code>quartodoc</code>, see <a href="https://posit-dev.github.io/great-docs/">Great Docs</a>. Eventually, anything of value from QuartoPyDoc will likely be merged into Great Docs.</p>
-<p>The rest of this readme is <code>quartodoc</code>’s original (except for the install instructions).</p>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install quartopydoc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>or from GitHub:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install git+https://github.com/sciris/quartopydoc.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Note that the package is installed as <code>quartopydoc</code>, but imported as <code>quartodoc</code>.</p>
+<blockquote class="blockquote">
+<p><strong>Important:</strong> if you haven’t already, you’ll need to install Quarto. We recommend the <a href="https://github.com/sciris/quarto-cli">Sciris fork</a>, which has improvements including parallel processing and skipping broken notebooks.</p>
+</blockquote>
+</section>
+<section id="differences-from-quartodoc" class="level2">
+<h2 class="anchored" data-anchor-id="differences-from-quartodoc">Differences from quartodoc</h2>
+<p>Everything documented for quartodoc still applies. On top of it, quartopydoc adds:</p>
+<p><strong>The <code>qpyd</code> and <code>qpynb</code> commands.</strong> Where <code>quartodoc build</code> generates your API reference pages, <code>qpyd</code> wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and <code>qpynb</code> runs, checks, converts, and cleans notebooks in parallel. See <a href="https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html">the qpyd CLI</a>.</p>
+<p><strong><code>contents: auto</code>.</strong> Document every public submodule of a package without listing them out, as shown <a href="#looking-up-objects">above</a>. Private modules and test modules are skipped.</p>
+<p><strong>griffe 2.x.</strong> quartopydoc requires griffe 2.0 or later, and tracks its current API.</p>
+<p><strong><code>qd.get_version()</code> and <code>qd.get_attr()</code>.</strong> Read the documented package’s version, or any other literal module-level constant (e.g.&nbsp;<code>__versiondate__</code>), from its source without importing it, for use in <code>_variables.py</code>. <code>import quartodoc</code> itself is also fast now, since the rest of the API is imported on first use.</p>
+<p><strong>A faster interlinks filter.</strong> The <code>interlinks</code> Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project’s <code>.quarto/interlinks</code> folder) instead of decoding them on every page. With large inventories (e.g.&nbsp;Python, NumPy and pandas), this saves a second or more per rendered page.</p>
+<p>Note: installing both <code>quartopydoc</code> and <code>quartodoc</code> into the same environment will conflict, since both provide the <code>quartodoc</code> package and the <code>quartodoc</code> command. All <code>quartodoc</code> functionality is available from <code>quartopydoc</code>.</p>
 <hr>
+<p>The rest of this readme is <code>quartodoc</code>’s original (except for the install instructions).</p>
 <p><strong>quartodoc</strong> lets you quickly generate Python package API reference documentation using Markdown and <a href="https://quarto.org">Quarto</a>. It is designed as an alternative to <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.</p>
 <p>Check out the below screencast for a walkthrough of creating a documentation site, or read on for instructions.</p>
 <p align="center">
 <a href="https://www.loom.com/share/fb4eb736848e470b8409ba46b514e2ed"> <img src="https://cdn.loom.com/sessions/thumbnails/fb4eb736848e470b8409ba46b514e2ed-00001.gif" width="75%"> </a>
 </p>
 <p><br></p>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install quartopydoc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>or from GitHub</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install git+https://github.com/sciris/quartopydoc.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Note that the package is installed as <code>quartopydoc</code>, but imported as <code>quartodoc</code>.</p>
-<blockquote class="blockquote">
-<p><strong>Important:</strong> if you haven’t already, you’ll need to <a href="https://quarto.org/docs/get-started/">install Quarto</a> before you can use quartodoc.</p>
-</blockquote>
 </section>
 <section id="basic-use" class="level2">
 <h2 class="anchored" data-anchor-id="basic-use">Basic use</h2>
@@ -478,16 +488,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> All modules</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">desc</span><span class="kw">:</span><span class="at"> </span><span class="st">""</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> auto</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="differences-from-quartodoc" class="level2">
-<h2 class="anchored" data-anchor-id="differences-from-quartodoc">Differences from quartodoc</h2>
-<p>Everything documented for quartodoc still applies. On top of it, quartopydoc adds:</p>
-<p><strong>The <code>qpyd</code> and <code>qpynb</code> commands.</strong> Where <code>quartodoc build</code> generates your API reference pages, <code>qpyd</code> wraps the whole docs lifecycle — pre-render builds, rendering, previewing, publishing, and scaffolding a new docs folder — and <code>qpynb</code> runs, checks, converts, and cleans notebooks in parallel. See <a href="https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html">the qpyd CLI</a>.</p>
-<p><strong><code>contents: auto</code>.</strong> Document every public submodule of a package without listing them out, as shown <a href="#looking-up-objects">above</a>. Private modules and test modules are skipped.</p>
-<p><strong>griffe 2.x.</strong> quartopydoc requires griffe 2.0 or later, and tracks its current API.</p>
-<p><strong><code>qd.get_version()</code> and <code>qd.get_attr()</code>.</strong> Read the documented package’s version, or any other literal module-level constant (e.g.&nbsp;<code>__versiondate__</code>), from its source without importing it, for use in <code>_variables.py</code>. <code>import quartodoc</code> itself is also fast now, since the rest of the API is imported on first use.</p>
-<p><strong>A faster interlinks filter.</strong> The <code>interlinks</code> Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project’s <code>.quarto/interlinks</code> folder) instead of decoding them on every page. With large inventories (e.g.&nbsp;Python, NumPy and pandas), this saves a second or more per rendered page.</p>
-<p>Note: installing both <code>quartopydoc</code> and <code>quartodoc</code> into the same environment will conflict, since both provide the <code>quartodoc</code> package and the <code>quartodoc</code> command. All <code>quartodoc</code> functionality is available from <code>quartopydoc</code>.</p>
 </section>
 <section id="learning-more" class="level2">
 <h2 class="anchored" data-anchor-id="learning-more">Learning more</h2>
