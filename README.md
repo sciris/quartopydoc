@@ -1,5 +1,3 @@
-# QuartoPyDoc
-
 QuartoPyDoc is a fork of [`quartodoc`](https://github.com/machow/quartodoc), created by Michael Chow at Posit but no longer maintained. Only the name of the distribution differs: you still import `quartodoc`, still run `quartodoc build`, and still configure a `quartodoc:` section in your `_quarto.yml`. For what this fork adds on top, see [differences from quartodoc](#differences-from-quartodoc). 
 
 This fork is **not** intended for widespread use and should be considered alpha at best; it may change arbitrarily and is unlikely to be maintained long term. For Posit’s more modern document generation package that is a successor to `quartodoc`, see [Great Docs](https://posit-dev.github.io/great-docs/). Eventually, anything of value from QuartoPyDoc will likely be merged into Great Docs.
