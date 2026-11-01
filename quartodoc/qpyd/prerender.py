@@ -33,7 +33,6 @@ import sciris as sc
 
 from .config import (
     CONFIG_NAME,
-    VARIABLES_PY,
     as_list,
     docs_dir,
     get_package_name,
@@ -273,7 +272,7 @@ def prerender(force=False):
         return
 
     if write_variables_yml():
-        print(f"Updated _variables.yml from {VARIABLES_PY}")
+        print("Updated _variables.yml")
 
     force = force or bool(os.environ.get("QPYD_FORCE_PRERENDER"))
     build_hash = prerender_hash()
