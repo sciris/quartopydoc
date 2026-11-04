@@ -34,6 +34,8 @@ Everything documented for quartodoc still applies. On top of it, quartopydoc add
 
 **A faster interlinks filter.** The `interlinks` Quarto filter looks objects up by name instead of scanning every inventory for each link, and caches the merged inventories (in the project's `.quarto/interlinks` folder) instead of decoding them on every page. With large inventories (e.g. Python, NumPy and pandas), this saves a second or more per rendered page.
 
+**An authorship badge.** The `authorship` Quarto filter shows a page's `authorship` front matter (`human` and `ai` percentages and a `note`) as a badge at the top right, with the note on hover. Install it with `quarto add sciris/quartopydoc` (which also installs `interlinks`), add `authorship` to the project's `filters`, and give a page e.g. `authorship: {human: 90, ai: 10, note: "Humans wrote everything, except some code examples"}`. A rule for `.authorship` in the project's CSS overrides the badge's style.
+
 Note: installing both `quartopydoc` and `quartodoc` into the same environment will conflict, since both provide the `quartodoc` package and the `quartodoc` command. All `quartodoc` functionality is available from `quartopydoc`.
 
 ---

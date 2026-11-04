@@ -1,0 +1,14 @@
+/* The authorship badge (see authorship.lua). :where() gives these rules no specificity, so
+   any rule for .authorship in the project's own CSS overrides them. */
+:where(#quarto-document-content) {
+  position: relative;
+}
+
+:where(.authorship) {
+  position: absolute;
+  top: 0.5em;
+  right: 0;
+  font-size: 0.85em;
+  opacity: 0.75;
+  cursor: help;
+}
