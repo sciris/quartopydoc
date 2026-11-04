@@ -2,254 +2,254 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/interlinks.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/architecture.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/qpyd-cli.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/extra-build-sequence.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-docstrings.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/sidebar.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-dataclasses.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/interlinks-autolink.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-prepare.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/crossrefs.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/basic-content.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/about.html</loc>
-    <lastmod>2026-11-01T12:16:56.833Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.986Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Item.html</loc>
-    <lastmod>2026-11-01T12:17:17.761Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.988Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/ast.DocstringSectionWarnings.html</loc>
-    <lastmod>2026-11-01T12:17:17.766Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.992Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.write_index.html</loc>
-    <lastmod>2026-11-01T12:17:17.738Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.971Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/index.html</loc>
-    <lastmod>2026-11-01T12:17:17.707Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.947Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.write_doc_pages.html</loc>
-    <lastmod>2026-11-01T12:17:17.739Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.972Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/ast.DocstringSectionSeeAlso.html</loc>
-    <lastmod>2026-11-01T12:17:17.764Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Layout.html</loc>
-    <lastmod>2026-11-01T12:17:17.747Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.977Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.SectionElement.html</loc>
-    <lastmod>2026-11-01T12:17:17.752Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.981Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/create_inventory.html</loc>
-    <lastmod>2026-11-01T12:17:17.744Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.975Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.from_quarto_config.html</loc>
-    <lastmod>2026-11-01T12:17:17.736Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.969Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.DocClass.html</loc>
-    <lastmod>2026-11-01T12:17:17.758Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.986Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Section.html</loc>
-    <lastmod>2026-11-01T12:17:17.749Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.979Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.DocFunction.html</loc>
-    <lastmod>2026-11-01T12:17:17.755Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.984Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/ast.ExampleCode.html</loc>
-    <lastmod>2026-11-01T12:17:17.767Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.992Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/blueprint.html</loc>
-    <lastmod>2026-11-01T12:17:17.717Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.955Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.DocAttribute.html</loc>
-    <lastmod>2026-11-01T12:17:17.756Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.984Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.write_sidebar.html</loc>
-    <lastmod>2026-11-01T12:17:17.740Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.972Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.create_inventory.html</loc>
-    <lastmod>2026-11-01T12:17:17.741Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.973Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/ast.DocstringSectionNotes.html</loc>
-    <lastmod>2026-11-01T12:17:17.765Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.991Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/collect.html</loc>
-    <lastmod>2026-11-01T12:17:17.718Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.956Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.signature.html</loc>
-    <lastmod>2026-11-01T12:17:17.730Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.965Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.DocModule.html</loc>
-    <lastmod>2026-11-01T12:17:17.757Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.985Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.summarize.html</loc>
-    <lastmod>2026-11-01T12:17:17.731Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.965Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.ChoicesChildren.html</loc>
-    <lastmod>2026-11-01T12:17:17.763Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.989Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Doc.html</loc>
-    <lastmod>2026-11-01T12:17:17.754Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.983Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.render_annotation.html</loc>
-    <lastmod>2026-11-01T12:17:17.728Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.963Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/ast.ExampleText.html</loc>
-    <lastmod>2026-11-01T12:17:17.768Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.993Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/convert_inventory.html</loc>
-    <lastmod>2026-11-01T12:17:17.745Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.976Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/get_object.html</loc>
-    <lastmod>2026-11-01T12:17:17.721Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.958Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.render_header.html</loc>
-    <lastmod>2026-11-01T12:17:17.729Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.964Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.html</loc>
-    <lastmod>2026-11-01T12:17:17.735Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.968Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Auto.html</loc>
-    <lastmod>2026-11-01T12:17:17.715Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.953Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.html</loc>
-    <lastmod>2026-11-01T12:17:17.726Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.961Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/preview.html</loc>
-    <lastmod>2026-11-01T12:17:17.723Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.959Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/Builder.build.html</loc>
-    <lastmod>2026-11-01T12:17:17.737Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.970Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Page.html</loc>
-    <lastmod>2026-11-01T12:17:17.751Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.980Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.Link.html</loc>
-    <lastmod>2026-11-01T12:17:17.759Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.987Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/MdRenderer.render.html</loc>
-    <lastmod>2026-11-01T12:17:17.727Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.962Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/api/layout.ContentElement.html</loc>
-    <lastmod>2026-11-01T12:17:17.752Z</lastmod>
+    <lastmod>2026-11-04T03:04:14.981Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/tutorials/index.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/examples/index.html</loc>
-    <lastmod>2026-11-01T12:16:56.835Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.988Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-renderers.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/basic-docs.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/extending.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/docstring-examples.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-snippets.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/dev-big-picture.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/advanced-layouts.html</loc>
-    <lastmod>2026-11-01T12:16:56.835Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.988Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/overview.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/basic-building.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
   <url>
     <loc>https://sciris.github.io/quartopydoc/get-started/docstring-style.html</loc>
-    <lastmod>2026-11-01T12:16:56.837Z</lastmod>
+    <lastmod>2026-11-04T03:03:54.990Z</lastmod>
   </url>
 </urlset>
