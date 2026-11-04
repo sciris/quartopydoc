@@ -79,3 +79,15 @@ def f_numpy_single_newline(text: str):
         multiple lines but uses single newlines.
         It should be collapsed into a single line.
     """
+
+
+def f_google_kwargs(a, b=1, *args, **kwargs):
+    """A google style docstring documenting parameters taken by **kwargs.
+
+    Args:
+        a (int): A required parameter.
+        b (int): A parameter with a default.
+        args (list): Extra positional arguments.
+        c (int): A parameter taken by **kwargs.
+        kwargs (dict): Other keywords.
+    """

@@ -482,6 +482,10 @@ class Builder:
     parser:
         Docstring parser to use. This correspond to different docstring styles,
         and can be one of "google", "sphinx", and "numpy". Defaults to "numpy".
+    parser_options:
+        Options passed to griffe's docstring parser, e.g. `warn_unknown_params: false`
+        to allow documenting parameters that arrive through `**kwargs`, or
+        `warn_missing_types: false`. See griffe's docs for the options of each parser.
     index_topmatter : dict, optional
         Custom YAML frontmatter for the API index page. When provided, this
         completely overrides the `title` configuration. Set to an empty dict
@@ -536,6 +540,7 @@ class Builder:
         source_dir: "str | None" = None,
         dynamic: bool | None = None,
         parser="numpy",
+        parser_options: "dict | None" = None,
         render_interlinks: bool = False,
         index_topmatter: "dict[str, Any] | None" = None,
         _fast_inventory=False,
@@ -557,6 +562,7 @@ class Builder:
 
         self.css = css
         self.parser = parser
+        self.parser_options = parser_options
 
         self.renderer = Renderer.from_config(renderer)
         if render_interlinks:
@@ -608,7 +614,12 @@ class Builder:
         # shaping and collection ----
 
         _log.info("Generating blueprint.")
-        blueprint = blueprint(self.layout, dynamic=self.dynamic, parser=self.parser)
+        blueprint = blueprint(
+            self.layout,
+            dynamic=self.dynamic,
+            parser=self.parser,
+            parser_options=self.parser_options,
+        )
 
         _log.info("Collecting pages and inventory items.")
         pages, self.items = collect(blueprint, base_dir=self.dir)

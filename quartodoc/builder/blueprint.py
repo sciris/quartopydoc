@@ -218,11 +218,11 @@ def _resolve_alias(obj: dc.Alias | dc.Object, get_object):
 
 
 class BlueprintTransformer(PydanticTransformer):
-    def __init__(self, get_object=None, parser="numpy"):
+    def __init__(self, get_object=None, parser="numpy", parser_options=None):
         if get_object is None:
             loader = GriffeLoader(
                 docstring_parser=Parser(parser),
-                docstring_options=get_parser_defaults(parser),
+                docstring_options={**get_parser_defaults(parser), **(parser_options or {})},
                 modules_collection=ModulesCollection(),
                 lines_collection=LinesCollection(),
             )
@@ -545,7 +545,11 @@ def blueprint(el: Auto, package: str) -> Doc:
 
 
 def blueprint(
-    el: _Base, package: str = None, dynamic: None | bool = None, parser="numpy"
+    el: _Base,
+    package: str = None,
+    dynamic: None | bool = None,
+    parser="numpy",
+    parser_options: "dict | None" = None,
 ) -> _Base:
     """Convert a configuration element to something that is ready to render.
 
@@ -557,6 +561,10 @@ def blueprint(
         A base package name. If specified, this is prepended to the names of any objects.
     dynamic:
         Whether to dynamically load objects. Defaults to using static analysis.
+    parser:
+        The docstring parser to use: "google", "sphinx", or "numpy".
+    parser_options:
+        Options passed to griffe's docstring parser, e.g. `{"warn_unknown_params": False}`.
 
     Examples
     --------
@@ -571,7 +579,7 @@ def blueprint(
 
     """
 
-    trans = BlueprintTransformer(parser=parser)
+    trans = BlueprintTransformer(parser=parser, parser_options=parser_options)
 
     if package is not None:
         trans.crnt_package = package

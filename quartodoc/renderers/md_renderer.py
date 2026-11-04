@@ -53,6 +53,7 @@ class ParamRow:
     description: str
     annotation: str | None = None
     default: str | None = None
+    required: bool = True  # False for *args, **kwargs, and parameters they take
 
     def to_definition_list(self):
         name = self.name
@@ -101,7 +102,10 @@ class ParamRow:
         description = sanitize(self.description, allow_markdown=True)
 
         if style == "parameters":
-            default = "_required_" if self.default is None else escape(self.default)
+            if self.default is not None:
+                default = escape(self.default)
+            else:
+                default = "_required_" if self.required else ""
             return (name, self.annotation, description, default)
         elif style == "attributes":
             return (name, self.annotation, description)
@@ -603,9 +607,18 @@ class MdRenderer(Renderer):
         str_body = []
         patched_sections = qast.transform(el.parsed)
 
-        for section in patched_sections:
+        # The signature the parameters are documented against, so that a parameter
+        # taken by *args or **kwargs isn't shown as required
+        outer_params = getattr(self, "_signature_params", None)
+        self._signature_params = getattr(el.parent, "parameters", None)
+
+        try:
+            sections = [(section, self.render(section)) for section in patched_sections]
+        finally:
+            self._signature_params = outer_params
+
+        for section, body in sections:
             title = section.title or section.kind.value
-            body: str = self.render(section)
 
             if title != "text":
                 header = self.render_header(section)
@@ -715,8 +728,26 @@ class MdRenderer(Renderer):
     @dispatch
     def render(self, el: ds.DocstringParameter) -> ParamRow:
         annotation = self.render_annotation(el.annotation)
+        in_signature = self._in_signature(el.name)
         return ParamRow(
-            el.name, el.description, annotation=annotation, default=el.default
+            el.name,
+            el.description,
+            annotation=annotation,
+            default=el.default if in_signature else None,
+            required=in_signature,
+        )
+
+    def _in_signature(self, name: str) -> bool:
+        """Whether a documented parameter is a named one in the signature, not one taken by *args or **kwargs."""
+        params = getattr(self, "_signature_params", None)
+        if params is None:
+            return True  # No signature to check against
+        name = name.lstrip("*")
+        if name not in params:
+            return False
+        return params[name].kind not in (
+            dc.ParameterKind.var_positional,
+            dc.ParameterKind.var_keyword,
         )
 
     # attributes ----

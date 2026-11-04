@@ -16,6 +16,18 @@ quartodoc:
 
 Currently, google, sphinx, and numpy are supported. Parsing is handled by the tool [griffe](https://github.com/mkdocstrings/griffe).
 
+Options for griffe's parser go in `parser_options`. For example, to document parameters that a function takes through `**kwargs` without a warning for each, and to allow parameters without types:
+
+```yaml
+quartodoc:
+  parser: google
+  parser_options:
+    warn_unknown_params: false
+    warn_missing_types: false
+```
+
+See [griffe's docs](https://mkdocstrings.github.io/griffe/reference/docstrings/) for the options of each parser.
+
 ### Resources
 
 See the [numpydoc sections guide][numpydoc] for more information and examples.

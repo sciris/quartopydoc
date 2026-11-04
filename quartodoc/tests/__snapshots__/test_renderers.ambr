@@ -688,11 +688,11 @@
   +----------+--------+--------------------------------+------------+
   | y        | str    | The second parameter.          | `None`     |
   +----------+--------+--------------------------------+------------+
-  | *args    | float  | Variable positional arguments. | `()`       |
+  | *args    | float  | Variable positional arguments. |            |
   +----------+--------+--------------------------------+------------+
   | option   | bool   | A keyword-only parameter.      | `False`    |
   +----------+--------+--------------------------------+------------+
-  | **kwargs | dict   | Variable keyword arguments.    | `{}`       |
+  | **kwargs | dict   | Variable keyword arguments.    |            |
   +----------+--------+--------------------------------+------------+
   
   ## Returns {.doc-section .doc-section-returns}
@@ -783,7 +783,7 @@
   
   :   The second parameter.
   
-  <code>[***args**]{.parameter-name} [:]{.parameter-annotation-sep} [float]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
+  <code>[***args**]{.parameter-name} [:]{.parameter-annotation-sep} [float]{.parameter-annotation}</code>
   
   :   Variable positional arguments.
   
@@ -791,7 +791,7 @@
   
   :   A keyword-only parameter.
   
-  <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [dict]{.parameter-annotation} [ = ]{.parameter-default-sep} [{}]{.parameter-default}</code>
+  <code>[****kwargs**]{.parameter-name} [:]{.parameter-annotation-sep} [dict]{.parameter-annotation}</code>
   
   :   Variable keyword arguments.
   

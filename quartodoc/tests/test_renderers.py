@@ -499,3 +499,24 @@ def test_render_full_numpydoc_description_list(snapshot):
     res = renderer.render(bp)
 
     assert res == snapshot
+
+
+def test_render_docstring_kwargs_not_required(renderer, caplog):
+    """Only parameters in the signature without a default are shown as required."""
+    package = "quartodoc.tests.example_docstring_styles"
+    auto = Auto(name="f_google_kwargs", package=package)
+    bp = blueprint(auto, parser="google", parser_options={"warn_unknown_params": False})
+
+    res = renderer.render(bp)
+    rows = {}  # Name: default, from the parameters table
+    for line in res.splitlines():
+        cells = [cell.strip() for cell in line.split("|")]
+        if len(cells) == 6:
+            rows[cells[1]] = cells[4]
+
+    assert "does not appear in the function signature" not in caplog.text
+    assert rows["a"] == "_required_"
+    assert rows["b"] == "`1`"
+    assert rows["args"] == ""
+    assert rows["c"] == ""
+    assert rows["kwargs"] == ""
