@@ -98,3 +98,23 @@ qpyd:
 execute:
   freeze: auto
 ```
+
+## Notebook downloads
+
+Quarto adds a "Download notebook" link only to pages whose source is an `.ipynb`. To offer a notebook for each `.qmd` page in a folder (e.g. `tutorials/`), render that folder to `ipynb` as well, unexecuted, and link to it, in a `_metadata.yml` in the folder:
+
+```yaml
+format:
+  html: default
+  ipynb:
+    execute:
+      enabled: false   # the HTML page already ran the code; the notebook has no outputs
+format-links:
+  - text: Jupyter notebook
+    format: ipynb
+    icon: journal-code
+```
+
+To title the link "Download" (Quarto's default is "Other Formats"), add `language: {related-formats-title: Download}` to `_quarto.yml`. A page that shouldn't have a notebook (e.g. an index) sets `format-links: false`.
+
+Code inside a tabset (`::: {.panel-tabset}`, e.g. Python and R tabs) becomes code cells only with the Sciris fork of Quarto (`sciris/quarto-cli`), which lays each tab's contents out in the notebook under its title in bold; upstream Quarto turns it into Markdown text.
