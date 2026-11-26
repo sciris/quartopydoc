@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cb61c712ca1a7fe70a83faed8e4da2d7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -516,7 +516,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    table_style<span class="op">=</span><span class="st">'table'</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    table_style_index<span class="op">=</span><span class="st">'table'</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    table_style_tocs<span class="op">=</span><span class="st">'table'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    source_url<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Render docstrings to markdown.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
@@ -588,10 +589,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Render the header of a docstring, including any anchors.</td>
 </tr>
 <tr class="even">
+<td><code>render_source_link</code></td>
+<td>A link to the object’s source, from <code>source_url</code>, as a list of zero or one parts.</td>
+</tr>
+<tr class="odd">
 <td><a href="../api/MdRenderer.signature.html#quartodoc.MdRenderer.signature"><code>signature</code></a></td>
 <td>Return a string representation of an object’s signature.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../api/MdRenderer.summarize.html#quartodoc.MdRenderer.summarize"><code>summarize</code></a></td>
 <td>Produce a summary table.</td>
 </tr>

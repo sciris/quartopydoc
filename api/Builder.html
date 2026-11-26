@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cb61c712ca1a7fe70a83faed8e4da2d7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -520,9 +520,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    parser<span class="op">=</span><span class="st">'numpy'</span>,</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    parser_options<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    render_interlinks<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    index_topmatter<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    _fast_inventory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    source_url<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    index_topmatter<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    _fast_inventory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Base class for building API docs.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
@@ -586,6 +587,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <dt><code><span class="parameter-name"><strong>parser</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation"></span> <span class="parameter-default-sep">=</span> <span class="parameter-default">'numpy'</span></code></dt>
 <dd>
 <p>Docstring parser to use. This correspond to different docstring styles, and can be one of “google”, “sphinx”, and “numpy”. Defaults to “numpy”.</p>
+</dd>
+<dt><code><span class="parameter-name"><strong>source_url</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">'str | None'</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
+<dd>
+<p>A link to each object’s source, as a template with <code>{path}</code> (the file, relative to the folder holding the package), <code>{lineno}</code> and <code>{endlineno}</code>, e.g.&nbsp;<code>https://github.com/org/repo/blob/main/{path}#L{lineno}-L{endlineno}</code>. The line numbers are those of the source the docs were built from. By default, no link is shown.</p>
 </dd>
 <dt><code><span class="parameter-name"><strong>parser_options</strong></span> <span class="parameter-annotation-sep">:</span> <span class="parameter-annotation">'dict | None'</span> <span class="parameter-default-sep">=</span> <span class="parameter-default">None</span></code></dt>
 <dd>

@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-cb61c712ca1a7fe70a83faed8e4da2d7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -485,12 +485,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>'numpy'</code></td>
 </tr>
 <tr class="even">
+<td>source_url</td>
+<td>'str | None'</td>
+<td>A link to each object’s source, as a template with <code>{path}</code> (the file, relative to the folder holding the package), <code>{lineno}</code> and <code>{endlineno}</code>, e.g.&nbsp;<code>https://github.com/org/repo/blob/main/{path}#L{lineno}-L{endlineno}</code>. The line numbers are those of the source the docs were built from. By default, no link is shown.</td>
+<td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
+</tr>
+<tr class="odd">
 <td>parser_options</td>
 <td>'dict | None'</td>
 <td>Options passed to griffe’s docstring parser, e.g.&nbsp;<code>warn_unknown_params: false</code> to allow documenting parameters that arrive through <code>**kwargs</code>, or <code>warn_missing_types: false</code>. See griffe’s docs for the options of each parser.</td>
 <td><a href="https://docs.python.org/3/builtins/constants.html#None" title="1"><code>None</code></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>index_topmatter</td>
 <td>dict</td>
 <td>Custom YAML frontmatter for the API index page. When provided, this completely overrides the <code>title</code> configuration. Set to an empty dict to generate an empty frontmatter block. Default is None, which falls back to using the <code>title</code> parameter.</td>
