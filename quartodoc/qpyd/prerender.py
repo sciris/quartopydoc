@@ -57,6 +57,40 @@ def build_api_docs():
     return run([sys.executable, "-m", "quartodoc", "build"])
 
 
+_missing = object()
+_resolved = {}
+
+
+def _resolve(name):
+    """The object a dotted name refers to, importing as needed, or ``_missing``."""
+    if name not in _resolved:
+        parts = name.split(".")
+        obj = _missing
+        for i in range(len(parts), 0, -1): # The longest prefix that imports, then attributes
+            try:
+                obj = importlib.import_module(".".join(parts[:i]))
+            except Exception:
+                continue
+            for part in parts[i:]:
+                obj = getattr(obj, part, _missing)
+                if obj is _missing:
+                    break
+            break
+        _resolved[name] = obj
+    return _resolved[name]
+
+
+def _same(alias, name):
+    """Whether two dotted names are the same object; an attribute that can't be got (e.g. one
+    only annotated) is the same if its parents are."""
+    a, b = _resolve(alias), _resolve(name)
+    if a is not _missing and b is not _missing:
+        return a is b
+    a_parent, a_last = alias.rsplit(".", 1)
+    b_parent, b_last = name.rsplit(".", 1)
+    return a_last == b_last and "." in a_parent and _same(a_parent, b_parent)
+
+
 @sc.timer("Customize aliases")
 def customize_aliases(mod_name=None, json_path="objects.json"):
     """
@@ -64,7 +98,8 @@ def customize_aliases(mod_name=None, json_path="objects.json"):
 
     For each ``pkg.submodule.Object`` that is also importable directly as
     ``pkg.Object``, register the shorter ``pkg.Object`` name so cross-references
-    can use it. The package name defaults to ``quartodoc.package`` from
+    can use it; the same for each subpackage, e.g. ``pkg.sub.Object`` for
+    ``pkg.sub.module.Object``. The package name defaults to ``quartodoc.package`` from
     ``_quarto.yml``.
     """
     mod_name = mod_name or get_package_name()
@@ -85,7 +120,7 @@ def customize_aliases(mod_name=None, json_path="objects.json"):
 
     data = sc.loadjson(json_path)
     items = data["items"]
-    names = [item["name"] for item in items]
+    names = {item["name"] for item in items}
     print(f'  Loaded {len(data["items"])} items')
 
     dups = []
@@ -93,14 +128,19 @@ def customize_aliases(mod_name=None, json_path="objects.json"):
         parts = item["name"].split(".")
         if len(parts) < 3 or parts[0] != mod_name:
             continue
-        objname = parts[2]  # e.g. 'Analyzer' from starsim.analyzers.Analyzer
-        if objname in mod_items:
-            remainder = ".".join(parts[2:])
-            alias = f"{mod_name}.{remainder}"
+        # Each package on the path that also has the object, e.g. pkg.Obj and pkg.sub.Obj
+        # from pkg.sub.module.Obj, if the shorter name is the same object
+        for i in range(1, len(parts) - 1):
+            prefix = ".".join(parts[:i])
+            if i == 1 and parts[i + 1] not in mod_items: # Quick check for the top level
+                continue
+            alias = f"{prefix}.{'.'.join(parts[i + 1:])}"
             if alias not in names:
-                dup = sc.dcp(item)
-                dup["name"] = alias
-                dups.append(dup)
+                if _same(alias, item["name"]):
+                    dup = sc.dcp(item)
+                    dup["name"] = alias
+                    dups.append(dup)
+                    names.add(alias)
 
     items.extend(dups)
     sc.savejson(json_path, data)

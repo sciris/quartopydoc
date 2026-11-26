@@ -215,6 +215,7 @@ class MdRenderer(Renderer):
         table_style="table",
         table_style_index="table",
         table_style_tocs="table",
+        source_url=None,
     ):
         self.header_level = header_level
         self.show_signature = show_signature
@@ -225,6 +226,7 @@ class MdRenderer(Renderer):
         self.table_style = table_style
         self.table_style_index = table_style_index
         self.table_style_tocs = table_style_tocs
+        self.source_url = source_url
 
         self.crnt_header_level = self.header_level
 
@@ -492,6 +494,21 @@ class MdRenderer(Renderer):
         return "\n\n".join(parts)
 
     @dispatch
+    def render_source_link(self, el: layout.Doc) -> "list[str]":
+        """A link to the object's source, from `source_url`, as a list of zero or one parts."""
+        if not self.source_url:
+            return []
+        try:
+            obj = el.obj
+            path = obj.relative_package_filepath.as_posix()
+            lineno, endlineno = obj.lineno, obj.endlineno
+        except Exception: # An alias that can't be resolved, or an object with no file
+            return []
+        if lineno is None:
+            return []
+        url = self.source_url.format(path=path, lineno=lineno, endlineno=endlineno or lineno)
+        return [f"[Source]({url}){{.doc-source-link}}"]
+
     def render(self, el: layout.Doc):
         raise NotImplementedError(f"Unsupported Doc type: {type(el)}")
 
@@ -571,12 +588,13 @@ class MdRenderer(Renderer):
 
         str_sig = self.signature(el)
         sig_part = [str_sig] if self.show_signature else []
+        src_part = [] if isinstance(el, layout.DocModule) else self.render_source_link(el)
 
         with self._increment_header():
             body = self.render(el.obj)
 
         return "\n\n".join(
-            [title, *sig_part, body, *attr_docs, *class_docs, *meth_docs]
+            [title, *src_part, *sig_part, body, *attr_docs, *class_docs, *meth_docs]
         )
 
     @dispatch
@@ -585,11 +603,12 @@ class MdRenderer(Renderer):
 
         str_sig = self.signature(el)
         sig_part = [str_sig] if self.show_signature else []
+        src_part = self.render_source_link(el) if isinstance(el, layout.DocFunction) else []
 
         with self._increment_header():
             body = self.render(el.obj)
 
-        return "\n\n".join([title, *sig_part, body])
+        return "\n\n".join([title, *src_part, *sig_part, body])
 
     # render griffe objects ===================================================
 

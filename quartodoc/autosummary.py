@@ -482,6 +482,11 @@ class Builder:
     parser:
         Docstring parser to use. This correspond to different docstring styles,
         and can be one of "google", "sphinx", and "numpy". Defaults to "numpy".
+    source_url:
+        A link to each object's source, as a template with `{path}` (the file, relative to
+        the folder holding the package), `{lineno}` and `{endlineno}`, e.g.
+        `https://github.com/org/repo/blob/main/{path}#L{lineno}-L{endlineno}`. The line numbers
+        are those of the source the docs were built from. By default, no link is shown.
     parser_options:
         Options passed to griffe's docstring parser, e.g. `warn_unknown_params: false`
         to allow documenting parameters that arrive through `**kwargs`, or
@@ -542,6 +547,7 @@ class Builder:
         parser="numpy",
         parser_options: "dict | None" = None,
         render_interlinks: bool = False,
+        source_url: "str | None" = None,
         index_topmatter: "dict[str, Any] | None" = None,
         _fast_inventory=False,
     ):
@@ -569,6 +575,8 @@ class Builder:
             # this is a top-level option, but lives on the renderer
             # so we just manually set it there for now.
             self.renderer.render_interlinks = render_interlinks
+        if source_url:
+            self.renderer.source_url = source_url # Also a top-level option that lives on the renderer
 
         if out_index is not None:
             self.out_index = out_index
